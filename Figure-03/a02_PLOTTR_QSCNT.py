@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from progressbar import progressbar
 from a03_FIELD0_QSCNT import velocity_field_Quiescent
 from a09_PRTCLE_QSCNT import maxey_riley_relaxing
 from a09_PRTCLE_PRSTH import maxey_riley_Prasath
@@ -19,10 +20,10 @@ Created on Tue Jan 30 17:56:36 2024
 #
 save_plot_to = './VISUAL_OUTPUT/'
 y0           = np.array([0., 0.])           # Initial position
-v0           = np.array([1., 0.])           # Initial velocity
+v0           = np.array([0.1, 0.])           # Initial velocity
 tini         = 0.                           # Initial time
-tend         = 10.                          # Final time
-L            = 1001                         # Time nodes
+tend         = 1.                           # Final time
+L            = 101                          # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
 vel          = velocity_field_Quiescent()   # Flow field
@@ -54,7 +55,7 @@ t_scale      = 10.          # Time Scale of the flow
 ###############################################################################
 #
 # Define Uniform grid [0,1]:
-N             = 101  # Number of nodes
+N             = np.copy(L)  # Number of nodes
 xi_fd_v       = np.linspace(0., 1., int(N))[:-1]
 
 # Control constant (Koleva 2005)
@@ -83,8 +84,7 @@ Quiescent_left  = maxey_riley_relaxing(1, y0, v0, tini,
                                        time_scale          = t_scale)
 
 Prasath_particle  = maxey_riley_Prasath(1, y0, v0, vel,
-                                        N, tini, dt,
-                                        nodes_dt, x_fd_v,
+                                        N, tini, dt, nodes_dt,
                                         particle_density    = rho1_p,
                                         fluid_density       = rho1_f,
                                         particle_radius     = rad_p,
@@ -115,7 +115,7 @@ Daitche_particle = maxey_riley_Daitche(1, y0, v0, vel, L,
 #
 # Calculate trajectories!
 Prasath_pos     = np.array([y0])
-for tt in range(1, len(taxis)):
+for tt in progressbar(range(1, len(taxis))):
     Quiescent_left.solve(taxis[tt])
     Quiescent_right.solve(taxis[tt])
     Prasath_particle.update()
@@ -135,8 +135,8 @@ elif order_Daitche == 3:
 ###############################################################################
 #
 # Bounds for Convergence velocity Field
-x_left  = -0.02
-x_right =  0.4
+x_left  = -0.002
+x_right =  0.03
 
 
 #
@@ -150,7 +150,8 @@ fig1.set_figheight(3.6)
 fs = 13
 lw = 2.2
 
-markers_on = np.arange(0, L, int(L/15))
+markers_on = np.arange(0, L, int((L-1)/10))
+#if markers_on[-1] != L-1: markers_on = np.append(markers_on, L-1)
 
 
 #############

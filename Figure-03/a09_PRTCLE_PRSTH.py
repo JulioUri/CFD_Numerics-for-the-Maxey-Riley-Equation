@@ -29,7 +29,7 @@ for a given time step.
 '''
 class maxey_riley_Prasath(object):
 
-    def __init__(self, tag, x, v, velocity_field, Nk, t0, dt, time_nodes, pseud_v,
+    def __init__(self, tag, x, v, velocity_field, Nk, t0, dt, time_nodes,
                particle_density=1, fluid_density=1, particle_radius=1,
                kinematic_viscosity=1, time_scale=1):
       
@@ -47,8 +47,6 @@ class maxey_riley_Prasath(object):
         self.vel      = velocity_field  # Velocity field class with methods to calculate velocity and derivatives
         
         self.Nk       = Nk              # Nodes in pseudospace
-        
-        self.pseud_v  = pseud_v         # Nodes in pseudospace where to obtain solution of the diff equation.
         
         # Class with all the parameter definition: alpha, gamma, R, St...
         self.p        = mr_parameter(particle_density, fluid_density,
@@ -542,65 +540,3 @@ class maxey_riley_Prasath(object):
         self.time_old_v = self.time_vec
         self.time    += self.dt
         self.tnodes_def()
-  
-    
-    def KmSin(self, k):
-        result = k * (self.p.alpha - k**2.0) / \
-                 ( (self.p.alpha - k**2.0 )**2.0 + (k * self.p.gamma)**2.0 )
-        
-        return result
-    
-    def KmCos(self, k):
-        result = k**2.0 * self.p.gamma / \
-                 ( (self.p.alpha - k**2.0 )**2.0 + (k * self.p.gamma)**2.0 )
-        
-        return result
-  
-    def Km(self, x, tau):
-        SinFunc   = lambda k: np.exp(-k**2.0 * tau) * self.KmSin(k)
-        resultsin = quad(SinFunc, 0.0, np.infty, epsrel=1e-10, weight='sin', wvar=x)[0]
-        CosFunc   = lambda k: np.exp(-k**2.0 * tau) * self.KmCos(k)
-        resultcos = quad(CosFunc, 0.0, np.infty, epsrel=1e-10, weight='cos', wvar=x)[0]
-        
-        return resultsin + resultcos
-      
-    def diffeq_solution(self, taxis):
-        
-        for xx in progressbar(range(0, len(self.pseud_v))):
-            I_2    = self.q0 * self.Km(self.pseud_v[xx], taxis[-1])
-            
-            tgrid  = np.array([])
-            fInt_v = np.array([])
-            gInt_v = np.array([])
-            for ss in range(0, len(taxis)):
-                if ss % 1 == 0:
-                    f, g      = self.calculate_f(self.q_vec[ss*19], self.pos_vec[ss*19], taxis[ss])
-                    
-                    tgrid     = np.append(tgrid, taxis[ss])
-                    fInt_v    = np.append(fInt_v, f * self.Km(self.pseud_v[xx], taxis[-1]- taxis[ss]))
-                    gInt_v    = np.append(gInt_v, g * self.Km(self.pseud_v[xx], taxis[-1]- taxis[ss]))
-            
-            
-            coeff_f    = cheb.chebfit(tgrid, fInt_v, int(len(tgrid)/2))
-            intcoeff_f = cheb.chebint(coeff_f)
-            Int_fInt1  = cheb.chebval(taxis[-1], intcoeff_f) - cheb.chebval(taxis[0], intcoeff_f)
-            
-            coeff_g    = cheb.chebfit(tgrid, gInt_v, int(len(tgrid)/2)) #len(tgrid)-1) 
-            intcoeff_g = cheb.chebint(coeff_g)
-            Int_gInt1  = cheb.chebval(taxis[-1], intcoeff_g) - cheb.chebval(taxis[0], intcoeff_g)
-            
-            '''
-            Int_fInt1  = np.trapz(fInt_v, tgrid)
-            Int_gInt1  = np.trapz(gInt_v, tgrid)
-            '''
-            
-            I_1        = np.array([Int_fInt1, Int_gInt1])
-            
-            result = (2.0 / np.pi) * (I_1 + I_2)
-            
-            if xx == 0:
-                result_v = result
-            else:
-                result_v = np.vstack([result_v, result])
-        
-        return result_v

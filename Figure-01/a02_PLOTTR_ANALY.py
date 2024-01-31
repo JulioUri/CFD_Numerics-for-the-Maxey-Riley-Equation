@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import h5py
-
-#from a03_FIELD0_ANALY import velocity_field_Analytical
-
 import matplotlib.pyplot as plt
+from progressbar import progressbar
 from a03_FIELD0_ANALY import velocity_field_Analytical
 from a09_PRTCLE_ANALY import maxey_riley_analytic
 from a09_PRTCLE_IMEX4 import maxey_riley_imex
@@ -26,7 +23,7 @@ y0           = np.array([1., 0.])         # Initial position
 v0           = np.array([0., 1.])         # Initial velocity
 tini         = 0.                         # Initial time
 tend         = 10.                        # Final time
-L            = 1001                       # Time nodes
+L            = 101                        # Time nodes
 taxis        = np.linspace(tini, tend, L) # Time axis
 dt           = taxis[1] - taxis[0]        # time step
 omega_value  = 1.                         # Angular velocity of the field 
@@ -59,7 +56,7 @@ t_scale      = 10.          # Time Scale of the flow
 ###############################################################################
 #
 # Define Uniform grid [0,1]:
-N           = 101  # Number of nodes
+N           = np.copy(L)  # Number of nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
 # Control constant (Koleva 2005)
@@ -115,7 +112,7 @@ IMEX4_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
 ###############################################################################
 #
 # Calculate trajectories!
-for tt in range(1, len(taxis)):
+for tt in progressbar(range(1, len(taxis))):
     Analytic_left.solve(taxis[tt])
     Analytic_right.solve(taxis[tt])
     IMEX4_particle.update()
@@ -162,7 +159,7 @@ lw = 2.2
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
 
-markers_on = np.arange(0, L, int(len(DIRK_particle.pos_vec[:,0])/20))
+markers_on = np.arange(0, L, int((L-1)/20))
 
 
 #############

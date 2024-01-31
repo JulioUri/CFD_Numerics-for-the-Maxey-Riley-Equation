@@ -22,7 +22,7 @@ save_plot_to = './VISUAL_OUTPUT/'
 vel          = velocity_field_Bickley()     # Flow field
 tini         = 0.                           # Initial time
 tend         = 5.                           # Final time
-L            = 1001                         # Time nodes
+L            = 501                          # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
 y0           = np.array([0., 0.])           # Initial position
@@ -56,7 +56,7 @@ t_scale      = 10.          # Time Scale of the flow
 ###############################################################################
 #
 # Define Uniform grid [0,1]:
-N           = 101  # Number of nodes
+N           = np.copy(L)  # Number of nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
 # Control constant (Koleva 2005)
@@ -66,7 +66,7 @@ c           = 20
 x_fd_v      = -c * np.log(1.0 - xi_fd_v)
 
 # Parameter for Prasath et al.
-nodes_dt      = 21 # Advised by Prasath et al.
+nodes_dt    = 21 # Advised by Prasath et al.
 
 #
 ###############################################################################
@@ -75,16 +75,14 @@ nodes_dt      = 21 # Advised by Prasath et al.
 #
 # Particles in the left plot
 Prasath_left  = maxey_riley_Prasath(1, y0, v0, vel,
-                                       N, tini, dt,
-                                       nodes_dt, x_fd_v,
+                                       N, tini, dt, nodes_dt,
                                        particle_density    = rho1_p,
                                        fluid_density       = rho1_f,
                                        particle_radius     = rad_p,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
-DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel,
-                                     x_fd_v, c, dt, tini,
+DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      particle_density    = rho1_p,
                                      fluid_density       = rho1_f,
                                      particle_radius     = rad_p,
@@ -93,8 +91,7 @@ DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel,
 
 # Particles in the right plot
 Prasath_right  = maxey_riley_Prasath(1, y0, v0, vel,
-                                        N, tini, dt,
-                                        nodes_dt, x_fd_v,
+                                        N, tini, dt, nodes_dt,
                                         particle_density    = rho2_p,
                                         fluid_density       = rho2_f,
                                         particle_radius     = rad_p,
@@ -107,8 +104,8 @@ IMEX2_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      particle_radius     = rad_p,
                                      kinematic_viscosity = nu_f,
                                      time_scale          = t_scale,
-                                     IMEXOrder           = 4,
-                                     FDOrder             = 4,
+                                     IMEXOrder           = 2,
+                                     FDOrder             = 2,
                                      parallel_flag       = False)
 
 
@@ -136,9 +133,9 @@ for tt in progressbar(range(1, len(taxis))):
 #
 # Bounds for Convergence velocity Field
 x_left  = -1.0
-x_right = 16.0
-y_down  = -3.1
-y_up    =  1.1
+x_right = 15.0
+y_down  = -3.0
+y_up    =  0.5
 
 
 #
@@ -169,7 +166,7 @@ lw = 2.2
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
 
-markers_on = np.arange(0, L, int(L/20))
+markers_on = np.arange(0, L, int((L-1)/20))
 
 
 #############
