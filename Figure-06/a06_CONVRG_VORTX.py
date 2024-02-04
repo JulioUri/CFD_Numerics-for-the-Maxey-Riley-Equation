@@ -31,7 +31,7 @@ omega_value  = 1.                         # Angular velocity of the field
 vel          = velocity_field_Analytical(omega=omega_value) # Flow field
 
 # Define vector of time nodes
-L_v          = np.array([ 26, 51, 101, 251, 501, 1001])
+L_v          = np.array([ 26, 51, 101, 251, 501]) #, 1001])
 
 #
 ###############################################################################
@@ -66,6 +66,10 @@ nodes_dt    = 21 # Advised by Prasath et al. (2019)
 # Start loop over the densities vectors #
 #########################################
 #
+# Warning
+print("\nRunning this script could take up to one hour. \n")
+
+# Start loop
 Trap_err_dic    = dict()
 Daitche_err_dic = dict()
 Prasath_err_dic = dict()
@@ -194,25 +198,25 @@ for j in range(0, len(rho_p)):
         
         try:
             Prasath_err     = Prasath_pos - Analytic_particle.pos_vec
-            Prasath_err_max = max(np.linalg.norm(Prasath_err, 2, axis=1))
+            Prasath_err_max = max(np.linalg.norm(Prasath_err, ord=2, axis=1))
             Prasath_err_v   = np.append(Prasath_err_v, Prasath_err_max)
         except:
             None
 
         Trap_err      = Trap_particle.pos_vec - Analytic_particle.pos_vec
-        Trap_err_max  = np.max(np.linalg.norm(Trap_err, ord=np.inf, axis=1))
+        Trap_err_max  = max(np.linalg.norm(Trap_err, ord=2, axis=1))
         Trap_err_v    = np.append(Trap_err_v, Trap_err_max)
 
         IMEX2_err     = IMEX2_particle.pos_vec - Analytic_particle.pos_vec
-        IMEX2_err_max = np.max(np.linalg.norm(IMEX2_err, ord=np.inf, axis=1))
+        IMEX2_err_max = max(np.linalg.norm(IMEX2_err, ord=2, axis=1))
         IMEX2_err_v   = np.append(IMEX2_err_v, IMEX2_err_max)
 
         IMEX4_err     = IMEX4_particle.pos_vec - Analytic_particle.pos_vec
-        IMEX4_err_max = np.max(np.linalg.norm(IMEX4_err, ord=np.inf, axis=1))
+        IMEX4_err_max = max(np.linalg.norm(IMEX4_err, ord=2, axis=1))
         IMEX4_err_v   = np.append(IMEX4_err_v, IMEX4_err_max)
 
         DIRK4_err     = DIRK4_particle.pos_vec - Analytic_particle.pos_vec
-        DIRK4_err_max = np.max(np.linalg.norm(DIRK4_err, ord=np.inf, axis=1))
+        DIRK4_err_max = max(np.linalg.norm(DIRK4_err, ord=2, axis=1))
         DIRK4_err_v   = np.append(DIRK4_err_v, DIRK4_err_max)
 
         if order_Daitche == 1:
@@ -223,7 +227,7 @@ for j in range(0, len(rho_p)):
             Daitche_particle.AdamBashf3(taxis, flag=True) # Third order method
 
         Daitche_err     = Daitche_particle.pos_vec - Analytic_particle.pos_vec
-        Daitche_err_max = np.max(np.linalg.norm(Daitche_err, ord=np.inf, axis=1))
+        Daitche_err_max = max(np.linalg.norm(Daitche_err, ord=2, axis=1))
         Daitche_err_v   = np.append(Daitche_err_v, Daitche_err_max)
         
         tf              = time.time()
@@ -270,6 +274,7 @@ head = ["R:", str(round((1.+2.*(rho_p[0]/rho_f[0]))/3., 2)),
               str(round((1.+2.*(rho_p[1]/rho_f[1]))/3., 2)),
               str(round((1.+2.*(rho_p[2]/rho_f[2]))/3., 2))]
 
+print("\nConvergence rates")
 print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
 
 #
@@ -284,20 +289,14 @@ fig1 = plt.figure(1, layout='tight')
 fig1.set_figwidth(4.2)
 fig1.set_figheight(3.6)
 fs = 13
-lw = 2.2
+lw = 1.5
 
-# plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2.e-4, "$N^{-2}$", color='grey')
 plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 1.7e-4, "$N^{-2}$", color='grey')
-# plt.plot(L_v[2:4], 1e-1*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 1e-9, "$N^{-3}$", color='grey')
+plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
 plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 3e-6, "$N^{-3}$", color='grey')
-# plt.plot(L_v[2:4], 5e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2e-11, "$N^{-4}$", color='grey')
-plt.plot(L_v[2:4], 30 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(125, 1e-8, "$N^{-4}$", color='grey')
+plt.text(190, 8e-7, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(155, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -311,14 +310,11 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
-# plt.legend(loc='lower left', fontsize=6)
 plt.grid()
 
-# plt.tight_layout()
-
-plt.savefig(save_plot_to + 'Figure06a.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_06a.pdf', format='pdf', dpi=500)
 
 #
 ###############
@@ -328,21 +324,13 @@ plt.savefig(save_plot_to + 'Figure06a.pdf', format='pdf', dpi=500)
 fig2 = plt.figure(2, layout='tight')
 fig2.set_figwidth(4.2)
 fig2.set_figheight(3.6)
-fs = 13
-lw = 2.2
 
-# plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2.e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 1.7e-4, "$N^{-2}$", color='grey')
-# plt.plot(L_v[2:4], 1e-1*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 1e-9, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 3e-6, "$N^{-3}$", color='grey')
-# plt.plot(L_v[2:4], 5e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2e-11, "$N^{-4}$", color='grey')
-plt.plot(L_v[2:4], 30 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(125, 1e-8, "$N^{-4}$", color='grey')
+plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
+plt.text(135, 1.e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5e-2*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
+plt.text(150, 1e-9, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 8e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
+plt.text(160, 2e-11, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -356,14 +344,11 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
-# plt.legend(loc='lower left', fontsize=6)
 plt.grid()
 
-# plt.tight_layout()
-
-plt.savefig(save_plot_to + 'Figure06b.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_06b.pdf', format='pdf', dpi=500)
 
 #
 ##############
@@ -373,21 +358,13 @@ plt.savefig(save_plot_to + 'Figure06b.pdf', format='pdf', dpi=500)
 fig3 = plt.figure(3, layout='tight')
 fig3.set_figwidth(4.2)
 fig3.set_figheight(3.6)
-fs = 13
-lw = 2.2
 
-# plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2.e-4, "$N^{-2}$", color='grey')
 plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 1.7e-4, "$N^{-2}$", color='grey')
-# plt.plot(L_v[2:4], 1e-1*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 1e-9, "$N^{-3}$", color='grey')
+plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
 plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(135, 3e-6, "$N^{-3}$", color='grey')
-# plt.plot(L_v[2:4], 5e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
-# plt.text(145, 2e-11, "$N^{-4}$", color='grey')
-plt.plot(L_v[2:4], 30 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(125, 1e-8, "$N^{-4}$", color='grey')
+plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -401,14 +378,11 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
-# plt.legend(loc='lower left', fontsize=6)
 plt.grid()
 
-# plt.tight_layout()
-
-plt.savefig(save_plot_to + 'Figure06c.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_06c.pdf', format='pdf', dpi=500)
 
 plt.show()
 
