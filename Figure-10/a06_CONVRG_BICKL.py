@@ -28,8 +28,8 @@ vel          = velocity_field_Bickley()   # Flow field
 y0           = np.array([0., 0.])         # Initial position
 v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
 
-# Define vector of time nodes
-L_v          = np.array([ 26, 51, 101, 251, 501]) #, 1001])
+# Define vector of time nodes (The last node is used for the calculation of the reference solution)
+L_v          = np.array([ 26, 51, 101, 251, 501, 651])
 
 #
 ###############################################################################
@@ -116,7 +116,8 @@ for j in range(0, len(rho_p)):
         Reference_pos = np.vstack((Reference_pos,
                                    Reference_particle.pos_vec[tt * (nodes_dt-1)]))
     
-    for ll in range(0, len(L_v)):
+    print("    *Starting the calculation of the numerical solutions.")
+    for ll in range(0, len(L_v[:-1])):
         taxis     = np.linspace(tini, tend, L_v[ll]) # Time axis
         dt        = taxis[1] - taxis[0]        # time step
         count    += 1
@@ -205,8 +206,8 @@ for j in range(0, len(rho_p)):
             DIRK4_particle.update()
         
         try:
-            Prasath_err     = Prasath_pos - Reference_pos
-            Prasath_err_max = max(np.linalg.norm(Prasath_err, ord=2, axis=1))
+            Prasath_err     = Prasath_pos[-1] - Reference_pos[-1]
+            Prasath_err_max = np.linalg.norm(Prasath_err, ord=2, axis=0)
             Prasath_err_v   = np.append(Prasath_err_v, Prasath_err_max)
         except:
             None
@@ -240,7 +241,7 @@ for j in range(0, len(rho_p)):
         
         tf              = time.time()
         
-        print("Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.")
+        print("\n   Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.\n")
         
     Trap_err_dic[j]    = Trap_err_v
     Daitche_err_dic[j] = Daitche_err_v
@@ -249,12 +250,12 @@ for j in range(0, len(rho_p)):
     IMEX4_err_dic[j]   = IMEX4_err_v
     DIRK4_err_dic[j]   = DIRK4_err_v
 
-    ConvTrap[j]    = str(round(np.polyfit(np.log(L_v), np.log(Trap_err_v),   1)[0], 2))
-    ConvDIRK4[j]   = str(round(np.polyfit(np.log(L_v), np.log(DIRK4_err_v),  1)[0], 2))
-    ConvIMEX2[j]   = str(round(np.polyfit(np.log(L_v), np.log(IMEX2_err_v),  1)[0], 2))
-    ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v), np.log(IMEX4_err_v),  1)[0], 2))
-    ConvDaitche[j] = str(round(np.polyfit(np.log(L_v), np.log(Daitche_err_v),1)[0], 2))
-    ConvPrasath[j] = str(round(np.polyfit(np.log(L_v), np.log(Prasath_err_v),1)[0], 2))
+    ConvTrap[j]    = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Trap_err_v),   1)[0], 2))
+    ConvDIRK4[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(DIRK4_err_v),  1)[0], 2))
+    ConvIMEX2[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(IMEX2_err_v),  1)[0], 2))
+    ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(IMEX4_err_v),  1)[0], 2))
+    ConvDaitche[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Daitche_err_v),1)[0], 2))
+    ConvPrasath[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Prasath_err_v),1)[0], 2))
     
 #
 ###############################################################################
@@ -299,24 +300,25 @@ fig1.set_figheight(3.6)
 fs = 13
 lw = 1.5
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 20.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 2e-3, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5e-1*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 7e-9, "$N^{-3}$", color='grey')
 
-plt.plot(L_v, Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[0],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[0], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[0],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[0],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+
+plt.plot(L_v[:-1], Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[0],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[0], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[0],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[0],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-10,1e-1)
+plt.ylim(1e-14,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
@@ -331,24 +333,27 @@ fig2 = plt.figure(2, layout='tight')
 fig2.set_figwidth(4.2)
 fig2.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 6.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 7e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 7e-8, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 1.*L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 4e-9, "$N^{-4}$", color='grey')
 
-plt.plot(L_v, Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[1],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[1], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[1],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[1],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+
+plt.plot(L_v[:-1], Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[1],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[1], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[1],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[1],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-10,1e-1)
+plt.ylim(1e-14,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
@@ -363,24 +368,24 @@ fig3 = plt.figure(3, layout='tight')
 fig3.set_figwidth(4.2)
 fig3.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 20.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 2e-3, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5e-1*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 7e-9, "$N^{-3}$", color='grey')
 
-plt.plot(L_v, Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[2],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[2], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[2],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[2],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+plt.plot(L_v[:-1], Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[2],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[2], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[2],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[2],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-10,1e-1)
+plt.ylim(1e-14,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_{\infty}$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 

@@ -1,6 +1,6 @@
 Dear reader,
 
-in order to obtain Figure 09 in the paper, just open "a06_CONVRG_QSCNT.py" and run it.
+in order to obtain Figure 10 in the paper, just open "a06_CONVRG_BICKL.py" and run it.
 
 The files that can be found in this folder are:
 
@@ -19,9 +19,9 @@ The files that can be found in this folder are:
 
 - a03_FIELD0_00000.py: File with the abstract class of a generic flow field.
 
-- a03_FIELD0_QSCNT.py: File with the flow field of the Quiescent background from Prasath et al. and the parameters of our paper.
+- a03_FIELD0_BICKL.py: File with the flow field of the Bickley Jet, as given by Padberg-Gehle, K. and Schneide C. (2017).
                        
-- a02_CONVRG_QSCNT.py: Script that should be run in order to obtain Figure 09 in our paper.
+- a02_CONVRG_BICKL.py: Script that should be run in order to obtain Figure 10 in our paper.
 		       This plot defines some of the parameters of the particles as well as the numerical schemes, calculates the solutions and plots them.
 
 - a09_PRTCLE_DIRK4.py: Script that has the class of a particle that given any field can calculate its trajectory using the DIRK method defined in our paper. The update method within this class calculates the trajectory of the particle with a fourth order method, respectively.
@@ -33,7 +33,5 @@ The files that can be found in this folder are:
 - a09_PRTCLE_PRSTH.py: Script that has the class of a particle that given any field can calculate its trajectory using Prasath et al.'s method. The update method in this class calculates the trajectory of the particle.
 
 - a09_PRTCLE_TRAPZ.py: Script that has the class of a particle that given any field can calculate its trajectory using the Trapezoidal Rule. The update method within this class calculates the trajectory of the particle with a fourth order method, respectively.
-
-- a09_PRTCLE_QSCNT.py: Script that has class the of a relaxing particle that moves in a quiescent background for which there is an analytical solution, found in Prasath et al. The update method in this class calculates the trajectory of the particle.
 
 The resulting plots are saved within the folder VISUAL_OUTPUT.
