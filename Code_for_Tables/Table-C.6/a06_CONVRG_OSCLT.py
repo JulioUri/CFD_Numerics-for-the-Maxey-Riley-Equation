@@ -28,7 +28,7 @@ tend         = 1.                         # Final time
 omega_value  = 1.                         # Angular velocity of the field 
 vel          = velocity_field_Oscillatory() # Flow field
 y0           = np.array([0., 0.])         # Initial position
-v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
+v0           = np.array([0., 0.1])        # Initial velocity
 
 # Define vector of time nodes
 L_v          = np.array([ 26, 51, 101, 251, 501]) #, 1001])
@@ -92,7 +92,7 @@ for j in range(0, len(t_scale)):
     IMEX4_err_v   = np.array([])
     DIRK4_err_v   = np.array([])
     
-    print("-> Starting calculating values of the plot Nº" + str(j+1))
+    print("-> Starting calculating values of the plot Nº" + str(j+1) + "\n")
     for ll in range(0, len(L_v)):
         taxis     = np.linspace(tini, tend, L_v[ll]) # Time axis
         dt        = taxis[1] - taxis[0]        # time step
