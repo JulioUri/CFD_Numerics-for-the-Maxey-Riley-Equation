@@ -67,7 +67,7 @@ nodes_dt    = 21 # Advised by Prasath et al. (2019)
 #########################################
 #
 # Warning
-print("\nRunning this script could take up to one hour. \n")
+print("\nRunning this script could take up over one hour. \n")
 
 # Start loop
 Trap_err_dic    = dict()
@@ -92,7 +92,7 @@ for j in range(0, len(t_scale)):
     IMEX4_err_v   = np.array([])
     DIRK4_err_v   = np.array([])
     
-    print("-> Starting calculating values of the plot Nº" + str(j+1))
+    print("-> Starting calculating values of the plot Nº" + str(j+1) + "\n")
     for ll in range(0, len(L_v)):
         taxis     = np.linspace(tini, tend, L_v[ll]) # Time axis
         dt        = taxis[1] - taxis[0]        # time step
