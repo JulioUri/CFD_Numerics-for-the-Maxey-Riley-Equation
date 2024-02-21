@@ -28,7 +28,6 @@ vel          = velocity_field_Bickley()   # Flow field
 y0           = np.array([0., 0.])         # Initial position
 v0           = np.array([0.5414, 0.]) # Initial velocity
 
-
 # Define vector of time nodes (The last node is used for the calculation of the reference solution)
 L_v          = np.array([ 26, 51, 101, 251, 501, 651])
 
@@ -38,13 +37,13 @@ L_v          = np.array([ 26, 51, 101, 251, 501, 651])
 ###############################################################################
 #
 # Define parameters to obtain R (Remember R=(1+2*rho_p/rho_f)/3):
-rho_p       = np.array([2.0, 1.0, 3.0])   # - Particle's density
-rho_f       = np.array([3.0, 1.0, 2.0])   # - Fluid's density
+rho_p        = 3.           # - Particle's density
+rho_f        = 2.           # - Fluid's density
 
 # Define parameters to obtain S (Remember S=rad_p**2/(3*nu_f*t_scale)):
 rad_p        = np.sqrt(3.)  # Particle's radius
 nu_f         = 1.           # Kinematic viscocity
-t_scale      = 10.          # Time Scale of the flow
+t_scale      = np.array([100., 10., 2., 1., 0.5, 0.25])          # Time Scale of the flow
 
 #
 ###############################################################################
@@ -67,7 +66,7 @@ nodes_dt    = 21 # Advised by Prasath et al. (2019)
 #########################################
 #
 # Warning
-print("\nRunning this script could take up to half an hour. \n")
+print("\nRunning this script could take up over four hours. \n")
 
 # Start loop
 Trap_err_dic    = dict()
@@ -82,8 +81,7 @@ ConvIMEX2       = dict()
 ConvIMEX4       = dict()
 ConvDaitche     = dict()
 ConvPrasath     = dict()
-assert len(rho_p) == len(rho_f), "Length of density vectors do not match."
-for j in range(0, len(rho_p)):
+for j in range(0, len(t_scale)):
     count         = 0
     
     Trap_err_v    = np.array([])
@@ -98,18 +96,18 @@ for j in range(0, len(rho_p)):
     ######################## Calculate reference solution #####################
     ###########################################################################
     #
-    print("-> Starting calculating values of the plot Nº" + str(j+1))
-    print("    *Calculating reference solution with Prasath et al.")
+    print("-> Starting calculating values of the plot Nº" + str(j+1) + "\n")
+    print("    *Calculating reference solution with Prasath et al.\n")
     N            = np.copy(L_v[-1])  # Number of nodes
     taxis        = np.linspace(tini, tend, L_v[-1]) # Time axis
     dt           = taxis[1] - taxis[0]        # time step
     Reference_particle  = maxey_riley_Prasath(1, y0, v0, vel, N, tini, dt,
                                            nodes_dt,
-                                           particle_density    = rho_p[j],
-                                           fluid_density       = rho_f[j],
+                                           particle_density    = rho_p,
+                                           fluid_density       = rho_f,
                                            particle_radius     = rad_p,
                                            kinematic_viscosity = nu_f,
-                                           time_scale          = t_scale)
+                                           time_scale          = t_scale[j])
     
     Reference_pos      = np.array([y0])
     for tt in range(1, len(taxis)):        
@@ -117,7 +115,7 @@ for j in range(0, len(rho_p)):
         Reference_pos = np.vstack((Reference_pos,
                                    Reference_particle.pos_vec[tt * (nodes_dt-1)]))
     
-    print("    *Starting the calculation of the numerical solutions.")
+    print("\n    *Starting the calculation of the numerical solutions.\n")
     for ll in range(0, len(L_v[:-1])):
         taxis     = np.linspace(tini, tend, L_v[ll]) # Time axis
         dt        = taxis[1] - taxis[0]        # time step
@@ -139,58 +137,58 @@ for j in range(0, len(rho_p)):
     
         Trap_particle    = maxey_riley_trapezoidal(1, y0, v0, vel,
                                                    x_fd_v, c, dt, tini,
-                                                   particle_density    = rho_p[j],
-                                                   fluid_density       = rho_f[j],
+                                                   particle_density    = rho_p,
+                                                   fluid_density       = rho_f,
                                                    particle_radius     = rad_p,
                                                    kinematic_viscosity = nu_f,
-                                                   time_scale          = t_scale)
+                                                   time_scale          = t_scale[j])
     
         IMEX2_particle   = maxey_riley_imex(1, y0, v0, vel,
                                             x_fd_v, c, dt, tini,
-                                            particle_density    = rho_p[j],
-                                            fluid_density       = rho_f[j],
+                                            particle_density    = rho_p,
+                                            fluid_density       = rho_f,
                                             particle_radius     = rad_p,
                                             kinematic_viscosity = nu_f,
-                                            time_scale          = t_scale,
+                                            time_scale          = t_scale[j],
                                             IMEXOrder           = 2,
                                             FDOrder             = 2,
                                             parallel_flag       = False)
     
         IMEX4_particle   = maxey_riley_imex(1, y0, v0, vel,
                                             x_fd_v, c, dt, tini,
-                                            particle_density    = rho_p[j],
-                                            fluid_density       = rho_f[j],
+                                            particle_density    = rho_p,
+                                            fluid_density       = rho_f,
                                             particle_radius     = rad_p,
                                             kinematic_viscosity = nu_f,
-                                            time_scale          = t_scale,
+                                            time_scale          = t_scale[j],
                                             IMEXOrder           = 4,
                                             FDOrder             = 4,
                                             parallel_flag       = False)
 
         DIRK4_particle   = maxey_riley_dirk(1, y0, v0, vel,
                                             x_fd_v, c, dt, tini,
-                                            particle_density    = rho_p[j],
-                                            fluid_density       = rho_f[j],
+                                            particle_density    = rho_p,
+                                            fluid_density       = rho_f,
                                             particle_radius     = rad_p,
                                             kinematic_viscosity = nu_f,
-                                            time_scale          = t_scale,
+                                            time_scale          = t_scale[j],
                                             parallel_flag       = False)
 
         Daitche_particle = maxey_riley_Daitche(1, y0, v0, vel, L_v[ll],
                                                order_Daitche,
-                                               particle_density    = rho_p[j],
-                                               fluid_density       = rho_f[j],
+                                               particle_density    = rho_p,
+                                               fluid_density       = rho_f,
                                                particle_radius     = rad_p,
                                                kinematic_viscosity = nu_f,
-                                               time_scale          = t_scale)
+                                               time_scale          = t_scale[j])
     
         Prasath_particle = maxey_riley_Prasath(1, y0, v0, vel, N, tini, dt,
                                                nodes_dt,
-                                               particle_density    = rho_p[j],
-                                               fluid_density       = rho_f[j],
+                                               particle_density    = rho_p,
+                                               fluid_density       = rho_f,
                                                particle_radius     = rad_p,
                                                kinematic_viscosity = nu_f,
-                                               time_scale          = t_scale)
+                                               time_scale          = t_scale[j])
         
         Prasath_pos      = np.array([y0])
         for tt in range(1, len(taxis)):        
@@ -257,7 +255,9 @@ for j in range(0, len(rho_p)):
     ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(IMEX4_err_v),  1)[0], 2))
     ConvDaitche[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Daitche_err_v),1)[0], 2))
     ConvPrasath[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Prasath_err_v),1)[0], 2))
-    
+
+
+
 #
 ###############################################################################
 ##################### Create Table with convergence orders ####################
@@ -266,47 +266,57 @@ for j in range(0, len(rho_p)):
 # Create convergence table
 mydata = [
          ["Prasath et al.:",
-          ConvPrasath[0], ConvPrasath[1], ConvPrasath[2]],
+          ConvPrasath[0], ConvPrasath[1], ConvPrasath[2],
+          ConvPrasath[3], ConvPrasath[4], ConvPrasath[5]],
          ["FD2 + Trap.:",
-          ConvTrap[0],    ConvTrap[1],    ConvTrap[2]],
+          ConvTrap[0],    ConvTrap[1],    ConvTrap[2],
+          ConvTrap[3],    ConvTrap[4],    ConvTrap[5]],
          ["FD2 + IMEX2:",
-          ConvIMEX2[0],   ConvIMEX2[1],   ConvIMEX2[2]],
+          ConvIMEX2[0],   ConvIMEX2[1],   ConvIMEX2[2],
+          ConvIMEX2[3],   ConvIMEX2[4],   ConvIMEX2[5]],
          ["Datiche, " + str(order_Daitche) + " order:",
-          ConvDaitche[0], ConvDaitche[1], ConvDaitche[2]],
+          ConvDaitche[0], ConvDaitche[1], ConvDaitche[2],
+          ConvDaitche[3], ConvDaitche[4], ConvDaitche[5]],
          ["FD2 + IMEX4:",
-          ConvIMEX4[0],   ConvIMEX4[1],   ConvIMEX4[2]],
+          ConvIMEX4[0],   ConvIMEX4[1],   ConvIMEX4[2],
+          ConvIMEX4[3],   ConvIMEX4[4],   ConvIMEX4[5]],
          ["FD2 + DIRK4:",
-          ConvDIRK4[0],   ConvDIRK4[1],   ConvDIRK4[2]],
+          ConvDIRK4[0],   ConvDIRK4[1],   ConvDIRK4[2],
+          ConvDIRK4[3],   ConvDIRK4[4],   ConvDIRK4[5]]
          ]
 
 # create header
-head = ["R:", str(round((1.+2.*(rho_p[0]/rho_f[0]))/3., 2)),
-              str(round((1.+2.*(rho_p[1]/rho_f[1]))/3., 2)),
-              str(round((1.+2.*(rho_p[2]/rho_f[2]))/3., 2))]
+head = ["S:", str(round(rad_p**2./(3.*nu_f*t_scale[0]), 2)),
+              str(round(rad_p**2./(3.*nu_f*t_scale[1]), 2)),
+              str(round(rad_p**2./(3.*nu_f*t_scale[2]), 2)),
+              str(round(rad_p**2./(3.*nu_f*t_scale[3]), 2)),
+              str(round(rad_p**2./(3.*nu_f*t_scale[4]), 2)),
+              str(round(rad_p**2./(3.*nu_f*t_scale[5]), 2))]
 
 print("\nConvergence rates")
 print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
+
 
 #
 ###############################################################################
 ##### Plot plots in figure with Particle's trajectories on velocity field #####
 ###############################################################################
 #
-#############
-# Left plot #
-#############
+############
+# Plot Nº1 #
+############
 fig1 = plt.figure(1, layout='tight')
 fig1.set_figwidth(4.2)
 fig1.set_figheight(3.6)
 fs = 13
 lw = 1.5
 
-plt.plot(L_v[2:4], 50*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 5e-1, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 1.1e2*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 7e-3, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 1.5e2*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1e-4, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(190, 8e-7, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(155, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v[:-1], Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v[:-1], Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -318,29 +328,30 @@ plt.plot(L_v[:-1], DIRK4_err_dic[0],   '+-', color='blue',   label="FD4 + DIRK4"
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-7, 1e1)
+plt.ylim(1e-10,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
 plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
-plt.savefig(save_plot_to + 'Figure_11a.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_01.pdf', format='pdf', dpi=500)
 
-#
-###############
-# Center plot #
-###############
-#
-fig2 = plt.figure(2, layout='tight')
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 50*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 5e-1, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 1.1e2*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 7e-3, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 1.5e2*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1e-4, "$N^{-3}$", color='grey')
+############
+# Plot Nº2 #
+############
+fig1 = plt.figure(2, layout='tight')
+fig1.set_figwidth(4.2)
+fig1.set_figheight(3.6)
+fs = 13
+lw = 1.5
+
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(190, 8e-7, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(155, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v[:-1], Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v[:-1], Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -352,29 +363,29 @@ plt.plot(L_v[:-1], DIRK4_err_dic[1],   '+-', color='blue',   label="FD4 + DIRK4"
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-7, 1e1)
+plt.ylim(1e-10,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
 plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
-plt.savefig(save_plot_to + 'Figure_11b.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_02.pdf', format='pdf', dpi=500)
 
 #
-##############
-# Right plot #
-##############
+############
+# Plot Nº3 #
+############
 #
-fig3 = plt.figure(3, layout='tight')
-fig3.set_figwidth(4.2)
-fig3.set_figheight(3.6)
+fig2 = plt.figure(3, layout='tight')
+fig2.set_figwidth(4.2)
+fig2.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 50*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 5e-1, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 1.1e2*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 7e-3, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 1.5e2*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1e-4, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
+plt.text(135, 1.e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5e-2*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
+plt.text(150, 1e-9, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 8e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
+plt.text(160, 2e-11, "$N^{-4}$", color='grey')
 
 plt.plot(L_v[:-1], Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v[:-1], Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -386,13 +397,81 @@ plt.plot(L_v[:-1], DIRK4_err_dic[2],   '+-', color='blue',   label="FD4 + DIRK4"
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-7, 1e1)
+plt.ylim(1e-10,1e-1)
 plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
 plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
-plt.savefig(save_plot_to + 'Figure_11c.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_03.pdf', format='pdf', dpi=500)
+
+#
+############
+# Plot Nº4 #
+############
+#
+fig3 = plt.figure(4, layout='tight')
+fig3.set_figwidth(4.2)
+fig3.set_figheight(3.6)
+
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1e-9, "$N^{-4}$", color='grey')
+
+plt.plot(L_v[:-1], Prasath_err_dic[3], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[3],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[3],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[3], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[3],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[3],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+
+plt.tick_params(axis='both', labelsize=fs)
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(1e-10,1e-1)
+plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
+plt.grid()
+
+plt.savefig(save_plot_to + 'Figure_04.pdf', format='pdf', dpi=500)
+
+#
+############
+# Plot Nº5 #
+############
+#
+fig3 = plt.figure(5, layout='tight')
+fig3.set_figwidth(4.2)
+fig3.set_figheight(3.6)
+
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1e-9, "$N^{-4}$", color='grey')
+
+plt.plot(L_v[:-1], Prasath_err_dic[4], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[4],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[4],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[4], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[4],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[4],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+
+plt.tick_params(axis='both', labelsize=fs)
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(1e-10,1e-1)
+plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
+plt.grid()
+
+plt.savefig(save_plot_to + 'Figure_05.pdf', format='pdf', dpi=500)
 
 plt.show()
 
