@@ -30,7 +30,7 @@ v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
 
 
 # Define vector of time nodes (The last node is used for the calculation of the reference solution)
-L_v          = np.array([ 26, 51, 101]) #, 251, 501, 651])
+L_v          = np.array([ 26, 51, 101, 251, 501, 651])
 
 
 #
@@ -270,7 +270,7 @@ for j in range(0, len(t_scale)):
 #
 Err_dic = dict()
 Err_dic["L_v"]     = L_v
-for j in range(0, len(rho_p)):
+for j in range(0, len(t_scale)):
     Err_dic["Prasath"] = Prasath_err_dic[j]
     Err_dic["Trap"]    = Prasath_err_dic[j]
     Err_dic["IMEX2"]   = Prasath_err_dic[j]
