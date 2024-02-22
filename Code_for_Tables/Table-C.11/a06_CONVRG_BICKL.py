@@ -28,8 +28,10 @@ vel          = velocity_field_Bickley()   # Flow field
 y0           = np.array([0., 0.])         # Initial position
 v0           = np.array([0.5414, 0.]) # Initial velocity
 
+
 # Define vector of time nodes (The last node is used for the calculation of the reference solution)
 L_v          = np.array([ 26, 51, 101, 251, 501, 651])
+
 
 #
 ###############################################################################
