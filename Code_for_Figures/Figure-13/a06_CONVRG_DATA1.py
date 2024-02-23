@@ -25,9 +25,12 @@ save_plot_to = './VISUAL_OUTPUT/'
 tini         = 0.                         # Initial time
 tend         = 1.                         # Final time
 vel          = velocity_field_Faraday1()  # Flow field
-y0           = np.array([0.02, 0.02])          # Initial position
-v0           = np.array([0.000425, -0.001130]) # Initial velocity
-
+y0           = np.array([0.02,  0.01])    # Initial position
+# Initial velocity
+velx, vely   = vel.get_velocity(y0[0], y0[1], tini)
+velx        *= 1.1
+vely        *= 1.1
+v0           = np.array([velx, vely])
 
 # Define vector of time nodes (The last node is used for the calculation of the reference solution)
 L_v          = np.array([ 26, 51, 101, 251, 501, 651])
@@ -98,8 +101,8 @@ for j in range(0, len(rho_p)):
     ######################## Calculate reference solution #####################
     ###########################################################################
     #
-    print("-> Starting calculating values of the plot Nº" + str(j+1))
-    print("    *Calculating reference solution with Prasath et al.")
+    print("-> Starting calculating values of the plot Nº" + str(j+1) + "\n")
+    print("    *Calculating reference solution with Prasath et al.\n")
     N            = np.copy(L_v[-1])  # Number of nodes
     taxis        = np.linspace(tini, tend, L_v[-1]) # Time axis
     dt           = taxis[1] - taxis[0]        # time step

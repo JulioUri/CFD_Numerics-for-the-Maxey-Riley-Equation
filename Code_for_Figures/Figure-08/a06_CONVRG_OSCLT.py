@@ -28,7 +28,10 @@ tend         = 1.                         # Final time
 omega_value  = 1.                         # Angular velocity of the field 
 vel          = velocity_field_Oscillatory() # Flow field
 y0           = np.array([0., 0.])         # Initial position
-v0           = np.array([0., 0.1])        # Initial velocity
+# Initial velocity
+velx, vely   = vel.get_velocity(y0[0], y0[1], tini)
+vely         = 0.1
+v0           = np.array([velx, vely])
 
 # Define vector of time nodes
 L_v          = np.array([ 26, 51, 101, 251, 501]) #, 1001])

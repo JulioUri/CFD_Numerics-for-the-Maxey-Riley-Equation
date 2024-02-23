@@ -25,8 +25,12 @@ save_plot_to   = './VISUAL_OUTPUT/'
 tini           = 0.                           # Initial time
 tend           = 1.                           # Final time
 vel            = velocity_field_Faraday1()    # Flow field
-y0             = np.array([0.02,  0.01])      # Initial position
-v0             = np.array([0.005781391, -0.007144148]) # Initial velocity
+y0             = np.array([0.02,  0.01])    # Initial position
+# Initial velocity # Initial velocity:
+velx, vely     = vel.get_velocity(y0[0], y0[1], tini)
+velx          *= 1.1
+vely          *= 1.1
+v0             = np.array([velx, vely])
 
 # Define vector of time nodes
 L_v            = np.array([ 26, 51, 101, 251, 501, 1001])
