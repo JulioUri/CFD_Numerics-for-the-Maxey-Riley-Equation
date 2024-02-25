@@ -26,7 +26,11 @@ tini         = 0.                         # Initial time
 tend         = 1.                         # Final time
 vel          = velocity_field_Bickley()   # Flow field
 y0           = np.array([0., 0.])         # Initial position
-v0           = np.array([0.5414, 0.]) # Initial velocity
+# Initial velocity:
+velx, vely   = vel.get_velocity(y0[0], y0[1], tini)
+velx        *= 1.1
+vely        *= 1.1
+v0           = np.array([velx, vely])
 
 
 # Define vector of time nodes (The last node is used for the calculation of the reference solution)
@@ -258,7 +262,39 @@ for j in range(0, len(rho_p)):
     ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(IMEX4_err_v),  1)[0], 2))
     ConvDaitche[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Daitche_err_v),1)[0], 2))
     ConvPrasath[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Prasath_err_v),1)[0], 2))
-    
+
+
+#
+###############################################################################
+################################## Save data ##################################
+###############################################################################
+#
+Err_dic = dict()
+Err_dic["Parameters"]  = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
+                          ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
+                          ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
+                          str(rad_p**2./(3.*nu_f*t_scale))}
+Err_dic["L_v"]         = L_v
+for j in range(0, len(t_scale)):
+    Err_dic["Prasath"] = Prasath_err_dic[j]
+    Err_dic["Trap"]    = Trap_err_dic[j]
+    Err_dic["IMEX2"]   = IMEX2_err_dic[j]
+    Err_dic["Daitche"] = Daitche_err_dic[j]
+    Err_dic["IMEX4"]   = IMEX4_err_dic[j]
+    Err_dic["DIRK4"]   = DIRK4_err_dic[j]
+    if j == 0:
+        np.save(save_plot_to + 'Data_01.npy', Err_dic)
+    elif j == 1:
+        np.save(save_plot_to + 'Data_02.npy', Err_dic)
+    elif j== 2:
+        np.save(save_plot_to + 'Data_03.npy', Err_dic)
+    elif j== 3:
+        np.save(save_plot_to + 'Data_04.npy', Err_dic)
+    elif j== 4:
+        np.save(save_plot_to + 'Data_05.npy', Err_dic)
+
+
+
 #
 ###############################################################################
 ##################### Create Table with convergence orders ####################

@@ -25,9 +25,8 @@ tend         = 5.                           # Final time
 L            = 501                          # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
-y0           = np.array([0.02, 0.01])           # Initial position
-v10, v20     = vel.get_velocity(y0[0], y0[1], tini)
-v0           = np.array([v10, v20])         # Initial velocity
+y0           = np.array([0.02, 0.01])       # Initial position
+v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
 
 
 #

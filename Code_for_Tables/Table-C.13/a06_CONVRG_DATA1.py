@@ -270,14 +270,18 @@ for j in range(0, len(rho_p)):
 ###############################################################################
 #
 Err_dic = dict()
-Err_dic["L_v"]     = L_v
+Err_dic["Parameters"]  = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
+                          ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
+                          ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
+                          str(rad_p**2./(3.*nu_f*t_scale))}
+Err_dic["L_v"]         = L_v
 for j in range(0, len(rho_p)):
     Err_dic["Prasath"] = Prasath_err_dic[j]
-    Err_dic["Trap"]    = Prasath_err_dic[j]
-    Err_dic["IMEX2"]   = Prasath_err_dic[j]
-    Err_dic["Daitche"] = Prasath_err_dic[j]
-    Err_dic["IMEX4"]   = Prasath_err_dic[j]
-    Err_dic["DIRK4"]   = Prasath_err_dic[j]
+    Err_dic["Trap"]    = Trap_err_dic[j]
+    Err_dic["IMEX2"]   = IMEX2_err_dic[j]
+    Err_dic["Daitche"] = Daitche_err_dic[j]
+    Err_dic["IMEX4"]   = IMEX4_err_dic[j]
+    Err_dic["DIRK4"]   = DIRK4_err_dic[j]
     if j == 0:
         np.save(save_plot_to + 'Data_01.npy', Err_dic)
     elif j == 1:

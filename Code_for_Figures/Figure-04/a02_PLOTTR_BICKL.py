@@ -20,14 +20,13 @@ Created on Tue Jan 30 17:19:11 2024
 #
 save_plot_to = './VISUAL_OUTPUT/'
 vel          = velocity_field_Bickley()     # Flow field
-tini         = 0.                           # Initial time
-tend         = 5.                           # Final time
-L            = 501                          # Time nodes
+tini         = 0                            # Initial time
+tend         = 5. #1.                           # Final time
+L            = 1001  #101                          # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
 y0           = np.array([0., 0.])           # Initial position
-v10, v20     = vel.get_velocity(y0[0], y0[1], tini)
-v0           = np.array([v10, v20])         # Initial velocity
+v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
 
 
 #
@@ -133,9 +132,9 @@ for tt in progressbar(range(1, len(taxis))):
 #
 # Bounds for Convergence velocity Field
 x_left  = -1.0
-x_right = 15.0
+x_right =  5.0
 y_down  = -3.0
-y_up    =  0.5
+y_up    =  1.0
 
 
 #
@@ -166,7 +165,7 @@ lw = 2.2
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
 
-markers_on = np.arange(0, L, int((L-1)/20))
+markers_on = np.arange(0, L, int((L-1)/5))
 
 
 #############
@@ -182,7 +181,7 @@ plt.plot(DIRK_particle.pos_vec[:,0], DIRK_particle.pos_vec[:,1],
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
@@ -204,7 +203,7 @@ plt.plot(IMEX2_particle.pos_vec[:,0], IMEX2_particle.pos_vec[:,1], 'x', markered
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 

@@ -283,7 +283,32 @@ PrecIMEX2   = str(round(np.polyfit(np.log(IMEX2_time_v),   np.log(IMEX2_err_v), 
 PrecIMEX4   = str(round(np.polyfit(np.log(IMEX4_time_v),   np.log(IMEX4_err_v),  1)[0], 2))
 PrecDaitche = str(round(np.polyfit(np.log(Daitche_time_v), np.log(Daitche_err_v),1)[0], 2))
 PrecPrasath = str(round(np.polyfit(np.log(Prasath_time_v), np.log(Prasath_err_v),1)[0], 2))
-    
+
+#
+###############################################################################
+################################## Save data ##################################
+###############################################################################
+#
+Err_dic = dict()
+Err_dic["Parameters"]   = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
+                           ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
+                           ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
+                           str(rad_p**2./(3.*nu_f*t_scale))}
+Err_dic["Prasath Err"]  = Prasath_err_v
+Err_dic["Prasath Time"] = Prasath_time_v
+Err_dic["Trap Err"]     = Trap_err_v
+Err_dic["Trap Time"]    = Trap_time_v
+Err_dic["IMEX2 Err"]    = IMEX2_err_v
+Err_dic["IMEX2 Time"]   = IMEX2_time_v
+Err_dic["Daitche Err"]  = Daitche_err_v
+Err_dic["Daitche Time"] = Daitche_time_v
+Err_dic["IMEX4 Err"]    = IMEX4_err_v
+Err_dic["IMEX4 Time"]   = IMEX4_time_v
+Err_dic["DIRK4 Err"]    = DIRK4_err_v
+Err_dic["DIRK4 Time"]   = DIRK4_time_v
+
+np.save(save_plot_to + 'Data.npy', Err_dic)
+
 #
 ###############################################################################
 ##################### Create Table with Precergence orders ####################

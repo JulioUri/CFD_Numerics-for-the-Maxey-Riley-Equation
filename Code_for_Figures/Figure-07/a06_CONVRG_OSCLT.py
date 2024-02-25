@@ -247,7 +247,34 @@ for j in range(0, len(rho_p)):
     ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v), np.log(IMEX4_err_v),  1)[0], 2))
     ConvDaitche[j] = str(round(np.polyfit(np.log(L_v), np.log(Daitche_err_v),1)[0], 2))
     ConvPrasath[j] = str(round(np.polyfit(np.log(L_v), np.log(Prasath_err_v),1)[0], 2))
-    
+
+
+#
+###############################################################################
+################################## Save data ##################################
+###############################################################################
+#
+Err_dic = dict()
+Err_dic["Parameters"]  = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
+                          ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
+                          ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
+                          str(rad_p**2./(3.*nu_f*t_scale))}
+Err_dic["L_v"]         = L_v
+for j in range(0, len(rho_p)):
+    Err_dic["Prasath"] = Prasath_err_dic[j]
+    Err_dic["Trap"]    = Trap_err_dic[j]
+    Err_dic["IMEX2"]   = IMEX2_err_dic[j]
+    Err_dic["Daitche"] = Daitche_err_dic[j]
+    Err_dic["IMEX4"]   = IMEX4_err_dic[j]
+    Err_dic["DIRK4"]   = DIRK4_err_dic[j]
+    if j == 0:
+        np.save(save_plot_to + 'Data_01.npy', Err_dic)
+    elif j == 1:
+        np.save(save_plot_to + 'Data_02.npy', Err_dic)
+    elif j== 2:
+        np.save(save_plot_to + 'Data_03.npy', Err_dic)
+
+
 #
 ###############################################################################
 ##################### Create Table with convergence orders ####################

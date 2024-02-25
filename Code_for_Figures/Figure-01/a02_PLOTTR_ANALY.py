@@ -19,8 +19,6 @@ Created on Tue Jan 30 11:17:01 2024
 ###############################################################################
 #
 save_plot_to = './VISUAL_OUTPUT/'
-y0           = np.array([1., 0.])         # Initial position
-v0           = np.array([0., 1.])         # Initial velocity
 tini         = 0.                         # Initial time
 tend         = 10.                        # Final time
 L            = 101                        # Time nodes
@@ -28,6 +26,8 @@ taxis        = np.linspace(tini, tend, L) # Time axis
 dt           = taxis[1] - taxis[0]        # time step
 omega_value  = 1.                         # Angular velocity of the field 
 vel          = velocity_field_Analytical(omega=omega_value) # Flow field
+y0           = np.array([1., 0.])         # Initial position
+v0           = vel.get_velocity(y0[0], y0[1], tini)  # Initial velocity
 
 
 #

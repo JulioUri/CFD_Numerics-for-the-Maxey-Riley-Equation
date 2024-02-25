@@ -255,7 +255,40 @@ for j in range(0, len(t_scale)):
     ConvIMEX4[j]   = str(round(np.polyfit(np.log(L_v[:-1]), np.log(IMEX4_err_v),  1)[0], 2))
     ConvDaitche[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Daitche_err_v),1)[0], 2))
     ConvPrasath[j] = str(round(np.polyfit(np.log(L_v[:-1]), np.log(Prasath_err_v),1)[0], 2))
-    
+
+
+#
+###############################################################################
+################################## Save data ##################################
+###############################################################################
+#
+Err_dic = dict()
+Err_dic["Parameters"]  = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
+                          ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
+                          ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
+                          str(rad_p**2./(3.*nu_f*t_scale))}
+Err_dic["L_v"]         = L_v
+for j in range(0, len(t_scale)):
+    Err_dic["Prasath"] = Prasath_err_dic[j]
+    Err_dic["Trap"]    = Trap_err_dic[j]
+    Err_dic["IMEX2"]   = IMEX2_err_dic[j]
+    Err_dic["Daitche"] = Daitche_err_dic[j]
+    Err_dic["IMEX4"]   = IMEX4_err_dic[j]
+    Err_dic["DIRK4"]   = DIRK4_err_dic[j]
+    if j == 0:
+        np.save(save_plot_to + 'Data_01.npy', Err_dic)
+    elif j == 1:
+        np.save(save_plot_to + 'Data_02.npy', Err_dic)
+    elif j== 2:
+        np.save(save_plot_to + 'Data_03.npy', Err_dic)
+    elif j== 3:
+        np.save(save_plot_to + 'Data_04.npy', Err_dic)
+    elif j== 4:
+        np.save(save_plot_to + 'Data_05.npy', Err_dic)
+    elif j== 5:
+        np.save(save_plot_to + 'Data_06.npy', Err_dic)
+
+
 #
 ###############################################################################
 ##################### Create Table with convergence orders ####################
@@ -471,6 +504,38 @@ plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_05.pdf', format='pdf', dpi=500)
 
-plt.show()
+#
+############
+# Plot Nº6 #
+############
+#
+fig3 = plt.figure(6, layout='tight')
+fig3.set_figwidth(4.2)
+fig3.set_figheight(3.6)
 
-print("\007")
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1e-9, "$N^{-4}$", color='grey')
+
+plt.plot(L_v[:-1], Prasath_err_dic[5], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v[:-1], Trap_err_dic[5],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v[:-1], IMEX2_err_dic[5],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v[:-1], Daitche_err_dic[5], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v[:-1], IMEX4_err_dic[5],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v[:-1], DIRK4_err_dic[5],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+
+plt.tick_params(axis='both', labelsize=fs)
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(1e-10,1e-1)
+plt.xlabel('Nodes, N', fontsize=fs, labelpad=0.25)
+plt.ylabel('$||\; error\; ||_2$', fontsize=fs, labelpad=0.25)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
+plt.grid()
+
+plt.savefig(save_plot_to + 'Figure_06.pdf', format='pdf', dpi=500)
+
+plt.show()
