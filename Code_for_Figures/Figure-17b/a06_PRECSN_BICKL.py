@@ -382,8 +382,8 @@ plt.ylim(5e-14, 1e0)
 plt.xscale("log")
 plt.yscale("log")
 
-plt.ylabel('$||\; error\; ||_{\infty}$',  fontsize=fs, labelpad=0.25)
-plt.xlabel('Running times [sec]', fontsize=fs, labelpad=0.25)
+plt.ylabel('$l_\infty$ error',  fontsize=fs, labelpad=0.25)
+plt.xlabel('runtimes [sec]', fontsize=fs, labelpad=0.25)
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
