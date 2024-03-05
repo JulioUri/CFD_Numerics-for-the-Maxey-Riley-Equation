@@ -21,8 +21,8 @@ Created on Tue Jan 30 17:19:11 2024
 save_plot_to = './VISUAL_OUTPUT/'
 vel          = velocity_field_Bickley()     # Flow field
 tini         = 0                            # Initial time
-tend         = 5. #1.                           # Final time
-L            = 1001  #101                          # Time nodes
+tend         = 1.                           # Final time
+L            = 101  #2001                          # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
 y0           = np.array([0., 0.])           # Initial position
@@ -44,7 +44,7 @@ rho2_p       = 3.0          # - Particle's density
 rho2_f       = 2.0          # - Fluid's density
 
 # Define parameters to obtain S (Remember S=rad_p**2/(3*nu_f*t_scale)):
-rad_p        = 3.           # Particle's radius
+rad_p        = 1.           # Particle's radius
 nu_f         = 1.           # Kinematic viscocity
 t_scale      = 10.          # Time Scale of the flow
 
