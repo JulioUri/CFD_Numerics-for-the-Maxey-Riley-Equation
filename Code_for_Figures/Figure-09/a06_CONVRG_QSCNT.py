@@ -3,6 +3,7 @@
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+from subprocess import call
 from tabulate import tabulate
 from a03_FIELD0_QSCNT import velocity_field_Quiescent
 from a09_PRTCLE_QSCNT import maxey_riley_relaxing
@@ -266,11 +267,14 @@ for j in range(0, len(rho_p)):
     Err_dic["IMEX4"]   = IMEX4_err_dic[j]
     Err_dic["DIRK4"]   = DIRK4_err_dic[j]
     if j == 0:
-        np.save(save_plot_to + 'Data_01.npy', Err_dic)
+        with open(save_plot_to + 'Data_01.txt', 'w') as file:
+            file.write( str(Err_dic) )
     elif j == 1:
-        np.save(save_plot_to + 'Data_02.npy', Err_dic)
+        with open(save_plot_to + 'Data_02.txt', 'w') as file:
+            file.write( str(Err_dic) )
     elif j== 2:
-        np.save(save_plot_to + 'Data_03.npy', Err_dic)
+        with open(save_plot_to + 'Data_03.txt', 'w') as file:
+            file.write( str(Err_dic) )
 
 #
 ###############################################################################
@@ -303,104 +307,141 @@ print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
 
 #
 ###############################################################################
-##### Plot plots in figure with Particle's trajectories on velocity field #####
+############################## Convergence Plots ##############################
 ###############################################################################
 #
-#############
-# Left plot #
-#############
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 1.5
+# 
+fs   = 5
+N_fs = 7
+lw   = 1
+ms   = 5
+#################
+# Top left plot #
+#################
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.3e-4, "$N^{-2}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(165, 1e-6, "$N^{-3}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(155, 1e-9, "$N^{-4}$", color='grey', fontsize=N_fs)
 
-plt.plot(L_v, Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[0],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[0], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[0],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[0],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
-
-plt.tick_params(axis='both', labelsize=fs)
-plt.xscale("log")
-plt.yscale("log")
-plt.ylim(1e-10,1e-1)
-plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
-plt.grid()
-
-plt.savefig(save_plot_to + 'Figure_09a.pdf', format='pdf', dpi=500)
-
-#
-###############
-# Center plot #
-###############
-#
-fig2 = plt.figure(2, layout='tight')
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
-
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
-
-plt.plot(L_v, Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[1],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[1], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[1],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[1],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+plt.plot(L_v, Prasath_err_dic[0], 'P-', color='darkgoldenrod', label="Prasath et al. (2019)", linewidth=lw, markersize=ms)
+plt.plot(L_v, Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX2_err_dic[0],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw, markersize=ms)
+plt.plot(L_v, Daitche_err_dic[0], 'd-', color='darkturquoise',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX4_err_dic[0],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw, markersize=ms)
+plt.plot(L_v, DIRK4_err_dic[0],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw, markersize=ms)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-10,1e-1)
+plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
 plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
-plt.savefig(save_plot_to + 'Figure_09b.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_06a.pdf', format='pdf', dpi=500)
+
+call(["pdfcrop", save_plot_to + 'Figure_06a.pdf', save_plot_to + 'Figure_06a.pdf'])
+
 
 #
-##############
-# Right plot #
-##############
+##################
+# Top right plot #
+##################
 #
-fig3 = plt.figure(3, layout='tight')
-fig3.set_figwidth(4.2)
-fig3.set_figheight(3.6)
+plt.figure(2, layout='tight', figsize=(2.5, 2.15))
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-1.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-2, "$N^{-1}$", color='grey')
-plt.plot(L_v[2:4], 5.*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 4e-4, "$N^{-2}$", color='grey')
+plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
+plt.text(135, 1.e-4, "$N^{-2}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 5e-2*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
+plt.text(140, 1e-9, "$N^{-3}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 8e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
+plt.text(160, 2e-11, "$N^{-4}$", color='grey', fontsize=N_fs)
 
-plt.plot(L_v, Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v, Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v, IMEX2_err_dic[2],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v, Daitche_err_dic[2], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v, IMEX4_err_dic[2],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v, DIRK4_err_dic[2],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+plt.plot(L_v, Prasath_err_dic[1], 'P-', color='darkgoldenrod', label="Prasath et al. (2019)", linewidth=lw, markersize=ms)
+plt.plot(L_v, Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX2_err_dic[1],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw, markersize=ms)
+plt.plot(L_v, Daitche_err_dic[1], 'd-', color='darkturquoise',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX4_err_dic[1],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw, markersize=ms)
+plt.plot(L_v, DIRK4_err_dic[1],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw, markersize=ms)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
 plt.yscale("log")
-plt.ylim(1e-10,1e-1)
+plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
 plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
 plt.grid()
 
-plt.savefig(save_plot_to + 'Figure_09c.pdf', format='pdf', dpi=500)
+plt.savefig(save_plot_to + 'Figure_06b.pdf', format='pdf', dpi=500)
+
+call(["pdfcrop", save_plot_to + 'Figure_06b.pdf', save_plot_to + 'Figure_06b.pdf'])
+
+#
+####################
+# Bottom left plot #
+####################
+#
+plt.figure(3, layout='tight', figsize=(2.5, 2.15))
+
+plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1.5e-4, "$N^{-2}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+plt.text(165, 1e-6, "$N^{-3}$", color='grey', fontsize=N_fs)
+plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+plt.text(145, 1e-9, "$N^{-4}$", color='grey', fontsize=N_fs)
+
+plt.plot(L_v, Prasath_err_dic[2], 'P-', color='darkgoldenrod', label="Prasath et al. (2019)", linewidth=lw, markersize=ms)
+plt.plot(L_v, Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX2_err_dic[2],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw, markersize=ms)
+plt.plot(L_v, Daitche_err_dic[2], 'd-', color='darkturquoise',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw, markersize=ms)
+plt.plot(L_v, IMEX4_err_dic[2],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw, markersize=ms)
+plt.plot(L_v, DIRK4_err_dic[2],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw, markersize=ms)
+
+plt.tick_params(axis='both', labelsize=fs)
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(1e-14,1e-2)
+plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
+plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
+plt.grid()
+
+plt.savefig(save_plot_to + 'Figure_06c.pdf', format='pdf', dpi=500)
+
+call(["pdfcrop", save_plot_to + 'Figure_06c.pdf', save_plot_to + 'Figure_06c.pdf'])
+
+#
+#####################
+# Bottom right plot #
+#####################
+#
+plt.figure(4, layout='tight', figsize=(2.5, 2.15))
+f       = lambda m, c: plt.plot([], [], marker=m, color=c, linewidth=lw, markersize=ms)[0]
+colors  = ['darkgoldenrod', 'green', 'violet', 'darkturquoise', 'red', 'blue']
+markers = ['P', 'v', 's', 'd', 'o', '+']
+handles = [f(markers[i], colors[i]) for i in range(0, len(colors))]
+
+labels  = ['Prasath et al. (2019)',
+           'FD2 + Trap. Rule',
+           'FD2 + IMEX2',
+           'Daitche, 3rd order',
+           'FD4 + IMEX4',
+           'FD4 + DIRK4']
+legend  = plt.legend(handles, labels, loc='center', fontsize=fs+4, framealpha=1, frameon=True)
+
+def export_legend(legend, filename="Figure_06_legend.pdf", expand=[-65,-55,-15,5]):
+    fig  = legend.figure
+    fig.canvas.draw()
+    bbox  = legend.get_window_extent()
+    bbox = bbox.from_extents(*(bbox.extents + np.array(expand)))
+    bbox = bbox.transformed(fig.dpi_scale_trans.inverted())
+    legend.axes.axis("off")
+    fig.savefig(save_plot_to + filename, dpi="figure", bbox_inches=bbox)
+
+export_legend(legend)
 
 plt.show()
 

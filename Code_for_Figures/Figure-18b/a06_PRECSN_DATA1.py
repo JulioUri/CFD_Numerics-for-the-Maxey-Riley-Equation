@@ -192,7 +192,7 @@ for ll in range(0, len(L_v[:-1])):
                                            kinematic_viscosity = nu_f,
                                            time_scale          = t_scale)
     
-    print("- Calculating Trapoidal Rule solution.")
+    print("- Calculating Trapezoidal Rule solution.")
     t0            = time.time()
     for tt in range(1, len(taxis)):
         Trap_particle.update()
