@@ -198,27 +198,29 @@ for j in range(0, len(rho_p)):
             IMEX4_particle.update()
             DIRK4_particle.update()
         
+        Ref_norm      = np.linalg.norm(Oscillatory_particle.pos_vec, ord=2, axis=1)
+        
         try:
             Prasath_err     = Prasath_pos - Oscillatory_particle.pos_vec
-            Prasath_err_max = max(np.linalg.norm(Prasath_err, ord=2, axis=1))
+            Prasath_err_max = max(np.linalg.norm(Prasath_err, ord=2, axis=1) / Ref_norm)
             Prasath_err_v   = np.append(Prasath_err_v, Prasath_err_max)
         except:
             None
 
         Trap_err      = Trap_particle.pos_vec - Oscillatory_particle.pos_vec
-        Trap_err_max  = max(np.linalg.norm(Trap_err, ord=2, axis=1))
+        Trap_err_max  = max(np.linalg.norm(Trap_err, ord=2, axis=1) / Ref_norm)
         Trap_err_v    = np.append(Trap_err_v, Trap_err_max)
 
         IMEX2_err     = IMEX2_particle.pos_vec - Oscillatory_particle.pos_vec
-        IMEX2_err_max = max(np.linalg.norm(IMEX2_err, ord=2, axis=1))
+        IMEX2_err_max = max(np.linalg.norm(IMEX2_err, ord=2, axis=1) / Ref_norm)
         IMEX2_err_v   = np.append(IMEX2_err_v, IMEX2_err_max)
 
         IMEX4_err     = IMEX4_particle.pos_vec - Oscillatory_particle.pos_vec
-        IMEX4_err_max = max(np.linalg.norm(IMEX4_err, ord=2, axis=1))
+        IMEX4_err_max = max(np.linalg.norm(IMEX4_err, ord=2, axis=1) / Ref_norm)
         IMEX4_err_v   = np.append(IMEX4_err_v, IMEX4_err_max)
 
         DIRK4_err     = DIRK4_particle.pos_vec - Oscillatory_particle.pos_vec
-        DIRK4_err_max = max(np.linalg.norm(DIRK4_err, ord=2, axis=1))
+        DIRK4_err_max = max(np.linalg.norm(DIRK4_err, ord=2, axis=1) / Ref_norm)
         DIRK4_err_v   = np.append(DIRK4_err_v, DIRK4_err_max)
 
         if order_Daitche == 1:
@@ -229,7 +231,7 @@ for j in range(0, len(rho_p)):
             Daitche_particle.AdamBashf3(taxis, flag=True) # Third order method
 
         Daitche_err     = Daitche_particle.pos_vec - Oscillatory_particle.pos_vec
-        Daitche_err_max = max(np.linalg.norm(Daitche_err, ord=2, axis=1))
+        Daitche_err_max = max(np.linalg.norm(Daitche_err, ord=2, axis=1) / Ref_norm)
         Daitche_err_v   = np.append(Daitche_err_v, Daitche_err_max)
         
         tf              = time.time()
@@ -343,7 +345,7 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
+plt.ylabel('$l_2$ relative error', fontsize=fs, labelpad=0.25)
 plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_06a.pdf', format='pdf', dpi=500)
@@ -377,7 +379,7 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
+plt.ylabel('$l_2$ relative error', fontsize=fs, labelpad=0.25)
 plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_06b.pdf', format='pdf', dpi=500)
@@ -410,7 +412,7 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-14,1e-2)
 plt.xlabel('Nodes N', fontsize=fs, labelpad=0.25)
-plt.ylabel('$l_2$ error', fontsize=fs, labelpad=0.25)
+plt.ylabel('$l_2$ relative error', fontsize=fs, labelpad=0.25)
 plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_06c.pdf', format='pdf', dpi=500)
