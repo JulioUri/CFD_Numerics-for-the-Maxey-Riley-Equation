@@ -346,48 +346,52 @@ print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
 #
 # Plot Work-precision plot
 fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 1.5
+fig1.set_figwidth(2.5)
+fig1.set_figheight(2.15)
+fs = 4
+lw = 1.2
+ms = 3
+
+# Plot data
+plt.plot(Prasath_time_v, Prasath_err_v, 'P-', color="darkgoldenrod",
+         label="Prasath et al. (2019)",   linewidth=lw, markersize=ms)
+plt.plot(Trap_time_v,  Trap_err_v,  'v-', color="green",
+         label='FD2 + Trap. Rule',        linewidth=lw, markersize=ms)
+plt.plot(IMEX2_time_v,   IMEX2_err_v,   's-', color="violet",
+         label = "FD2 + IMEX2",  linewidth=lw, markersize=ms)
+plt.plot(Daitche_time_v, Daitche_err_v, 'd-', color="darkturquoise",
+         label="Daitche, $3^{rd}$ order", linewidth=lw, markersize=ms)
+plt.plot(IMEX4_time_v,   IMEX4_err_v,   'o-', color="red",
+         label ="FD4 + IMEX4",  linewidth=lw, markersize=ms)
+plt.plot(DIRK4_time_v,    DIRK4_err_v,    '+-', color="blue",
+         label ="FD4 + DIRK4",  linewidth=lw, markersize=ms)
 
 # Define vertical line characteristics
 plt.vlines(x = tend, ymin = 7e-13, ymax = 2e-3,
            colors     = 'black', linestyles = 'solid')
 
 # Define text on plot
-plt.text(1.5e-2, 5e-12, 'Faster than \n  Real Time', weight='bold', fontsize=8)
+plt.text(4e-2, 5e-12, 'Faster than \n  Real Time', weight='bold', fontsize=fs)
 plt.annotate('', xy=(2e-2, 1e-12), xytext=(0.8, 1e-12), 
-             arrowprops=dict(facecolor='black', shrink=0.))
-plt.text(1.3, 5e-12, 'Slower than \nReal Time', weight='bold', fontsize=8)
+             arrowprops=dict(facecolor='black', shrink=0.,
+                             width=2, headwidth=8, headlength=7))
+plt.text(1.3, 5e-12, 'Slower than \nReal Time', weight='bold', fontsize=fs)
 plt.annotate('', xy=(48, 1e-12), xytext=(1.3, 1e-12), 
-             arrowprops=dict(facecolor='black', shrink=0.))
-
-# Plot data
-plt.plot(Prasath_time_v, Prasath_err_v, 'P-', color="darkgoldenrod",
-         label="Prasath et al. (2019)",   linewidth=lw)
-plt.plot(Trap_time_v,  Trap_err_v,  'v-', color="green",
-         label='FD2 + Trap. Rule',        linewidth=lw)
-plt.plot(IMEX2_time_v,   IMEX2_err_v,   's-', color="violet",
-         label = "FD2 + IMEX2",  linewidth=lw)
-plt.plot(Daitche_time_v, Daitche_err_v, 'd-', color="darkturquoise",
-         label="Daitche, $3^{rd}$ order", linewidth=lw)
-plt.plot(IMEX4_time_v,   IMEX4_err_v,   'o-', color="red",
-         label ="FD4 + IMEX4",  linewidth=lw)
-plt.plot(DIRK4_time_v,    DIRK4_err_v,    '+-', color="blue",
-         label ="FD4 + DIRK4",  linewidth=lw)
+             arrowprops=dict(facecolor='black', shrink=0.,
+                             width=2, headwidth=8, headlength=7))
 
 # Define plotting limits
-plt.xlim(3e-3, 2e3)
+plt.xlim(3e-3, 1e3)
 plt.ylim(5e-14, 1e-2)
 
 # Define plot characteristics
 plt.xscale("log")
 plt.yscale("log")
 
+plt.tick_params(axis='both', labelsize=fs)
 plt.ylabel('$l_2$ error at last node',  fontsize=fs, labelpad=0.25)
 plt.xlabel('runtimes [sec]', fontsize=fs, labelpad=0.25)
-plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=6)
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.21), ncol=3, fontsize=fs)
 plt.grid()
 
 # Save plot
