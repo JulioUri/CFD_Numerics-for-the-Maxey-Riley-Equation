@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from subprocess import call
 from progressbar import progressbar
 from a03_FIELD0_OSCLT import velocity_field_Oscillatory
 from a09_PRTCLE_OSCLT import maxey_riley_oscillatory
@@ -18,7 +19,7 @@ Created on Tue Jan 30 17:19:11 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                  # Folder where output is saved
 tini         = 0.                           # Initial time
 tend         = 3.                           # Final time
 L            = 101                          # Time nodes
@@ -53,7 +54,7 @@ t_scale      = 10.          # Time Scale of the flow
 ################# Define parameters for the numerical schemes #################
 ###############################################################################
 #
-# Define Uniform grid [0,1]:
+# Define Uniform grid [0,1):
 N           = np.copy(L)  # Number of nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
@@ -69,7 +70,8 @@ x_fd_v      = -c * np.log(1.0 - xi_fd_v)
 ######################### Create classes instances ############################
 ###############################################################################
 #
-# Particles in the left plot
+# Particle classes in the left plot
+#  - Class of the analytic solution in the Oscillatory background
 Oscillatory_left  = maxey_riley_oscillatory(1, y0, v0, tini, vel,
                                       particle_density    = rho1_p,
                                       fluid_density       = rho1_f,
@@ -77,6 +79,7 @@ Oscillatory_left  = maxey_riley_oscillatory(1, y0, v0, tini, vel,
                                       kinematic_viscosity = nu_f,
                                       time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with Trapezoidal Rlue
 Trapezoidal_particle  = maxey_riley_trapezoidal(1, y0, v0, vel,
                                       x_fd_v, c, dt, tini,
                                       particle_density    = rho1_p,
@@ -85,7 +88,8 @@ Trapezoidal_particle  = maxey_riley_trapezoidal(1, y0, v0, vel,
                                       kinematic_viscosity = nu_f,
                                       time_scale          = t_scale)
 
-# Particles in the right plot
+# Particles classes in the right plot
+#  - Class of the analytic solution in the Oscillatory background
 Oscillatory_right = maxey_riley_oscillatory(1, y0, v0, tini, vel,
                                       particle_density    = rho2_p,
                                       fluid_density       = rho2_f,
@@ -93,6 +97,7 @@ Oscillatory_right = maxey_riley_oscillatory(1, y0, v0, tini, vel,
                                       kinematic_viscosity = nu_f,
                                       time_scale          = t_scale)
 
+#  - Class of particle trajectory calculated with IMEX4 solver
 IMEX4_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                       particle_density    = rho2_p,
                                       fluid_density       = rho2_f,
@@ -145,14 +150,16 @@ X, Y = np.meshgrid(xaxis, yaxis)
 
 #
 ###############################################################################
-##### Plot plots in figure with Particle's trajectories on velocity field #####
+##### Plot plots of figure with Particle's trajectories on velocity field #####
 ###############################################################################
 #
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 2.2
+fs   = 7
+lw   = 1.2
+ms   = 6
+
+##############################################
+# Define points where to plot velocity field #
+##############################################
 
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
@@ -164,41 +171,48 @@ markers_on = np.arange(0, L, int((L-1)/25))
 # Left plot #
 #############
 
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Oscillatory_left.pos_vec[:,0], Oscillatory_left.pos_vec[:,1],
               color='red', linewidth=lw, label="Analytical solution")
 plt.plot(Trapezoidal_particle.pos_vec[:,0], Trapezoidal_particle.pos_vec[:,1],
-              'x', markeredgewidth=lw, markersize=10,
+              'x', markeredgewidth=lw, markersize=ms,
               color='green', label=("Trap. Rule"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_02a.pdf', format='pdf', dpi=400, bbox_inches='tight')
 
+call(["pdfcrop", save_plot_to + 'Figure_02a.pdf', save_plot_to + 'Figure_02a.pdf'])
 
 ##############
 # Right plot #
 ##############
 
-fig2 = plt.figure(2, layout='tight', figsize=(3.6, 1.8))
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
+plt.figure(2, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Oscillatory_right.pos_vec[:,0], Oscillatory_right.pos_vec[:,1],
               color='red', linewidth=lw, label="Analytical solution")
-plt.plot(IMEX4_particle.pos_vec[:,0], IMEX4_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=10,
-              color='blue', label=("IMEX 2nd order"), markevery=markers_on)    
+plt.plot(IMEX4_particle.pos_vec[:,0], IMEX4_particle.pos_vec[:,1],
+              'x', markeredgewidth=lw, markersize=ms,
+              color='blue', label=("IMEX 2nd order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_02b.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_02b.pdf', save_plot_to + 'Figure_02b.pdf'])
 
 plt.show()

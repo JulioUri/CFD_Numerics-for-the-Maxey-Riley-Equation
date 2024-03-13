@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from subprocess import call
 from progressbar import progressbar
 from a03_FIELD0_QSCNT import velocity_field_Quiescent
 from a09_PRTCLE_QSCNT import maxey_riley_relaxing
@@ -18,9 +19,9 @@ Created on Tue Jan 30 17:56:36 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                  # Folder where output is saved
 y0           = np.array([0., 0.])           # Initial position
-v0           = np.array([0.1, 0.])           # Initial velocity
+v0           = np.array([0.1, 0.])          # Initial velocity
 tini         = 0.                           # Initial time
 tend         = 1.                           # Final time
 L            = 101                          # Time nodes
@@ -54,7 +55,7 @@ t_scale      = 10.          # Time Scale of the flow
 ################# Define parameters for the numerical schemes #################
 ###############################################################################
 #
-# Define Uniform grid [0,1]:
+# Define Uniform grid [0,1):
 N             = np.copy(L)  # Number of nodes
 xi_fd_v       = np.linspace(0., 1., int(N))[:-1]
 
@@ -75,7 +76,8 @@ order_Daitche = 3
 ######################### Create classes instances ############################
 ###############################################################################
 #
-# Particles in the left plot
+# Particle classes in the left plot
+#  - Class of the analytic solution in the Quiescent flow
 Quiescent_left  = maxey_riley_relaxing(1, y0, v0, tini,
                                        particle_density    = rho1_p,
                                        fluid_density       = rho1_f,
@@ -83,6 +85,7 @@ Quiescent_left  = maxey_riley_relaxing(1, y0, v0, tini,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with Prasath et al.'s scheme
 Prasath_particle  = maxey_riley_Prasath(1, y0, v0, vel,
                                         N, tini, dt, nodes_dt,
                                         particle_density    = rho1_p,
@@ -91,7 +94,8 @@ Prasath_particle  = maxey_riley_Prasath(1, y0, v0, vel,
                                         kinematic_viscosity = nu_f,
                                         time_scale          = t_scale)
 
-# Particles in the right plot
+# Particles classes in the right plot
+#  - Class of the analytic solution in the Quiescent flow
 Quiescent_right = maxey_riley_relaxing(1, y0, v0, tini,
                                        particle_density    = rho2_p,
                                        fluid_density       = rho2_f,
@@ -99,6 +103,7 @@ Quiescent_right = maxey_riley_relaxing(1, y0, v0, tini,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
+#  - Class of particle trajectory calculated with Daiche's scheme
 Daitche_particle = maxey_riley_Daitche(1, y0, v0, vel, L,
                                        order_Daitche,
                                        particle_density    = rho2_p,
@@ -141,56 +146,60 @@ x_right =  0.03
 
 #
 ###############################################################################
-##### Plot plots in figure with Particle's trajectories on velocity field #####
+##### Plot plots of figure with Particle's trajectories on velocity field #####
 ###############################################################################
 #
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 2.2
+fs   = 7
+lw   = 1.2
+ms   = 6
 
 markers_on = np.arange(0, L, int((L-1)/10))
-#if markers_on[-1] != L-1: markers_on = np.append(markers_on, L-1)
 
 
 #############
 # Left plot #
 #############
 
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
+
 plt.plot(taxis, Quiescent_left.pos_vec[:,0],
               color='red', linewidth=lw, label="Analytical solution")
 plt.plot(taxis, Prasath_pos[:,0],
-              'x', markeredgewidth=lw, markersize=10,
+              'x', markeredgewidth=lw, markersize=ms,
               color='green', label=("Prasath et al."), markevery=markers_on)
+
 plt.xlabel('$time$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower right", fontsize=fs-1, prop={'size':fs-1})
 plt.ylim([x_left, x_right])
 plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_03a.pdf', format='pdf', dpi=400, bbox_inches='tight')
 
+call(["pdfcrop", save_plot_to + 'Figure_03a.pdf', save_plot_to + 'Figure_03a.pdf'])
 
 ##############
 # Right plot #
 ##############
 
-fig2 = plt.figure(2, layout='tight', figsize=(3.6, 1.8))
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
+plt.figure(2, layout='tight', figsize=(2.5, 2.15))
+
 plt.plot(taxis, Quiescent_right.pos_vec[:,0],
               color='red', linewidth=lw, label="Analytical solution")
-plt.plot(taxis, Daitche_particle.pos_vec[:,0], 'x', markeredgewidth=lw, markersize=10,
-              color='blue', label=("Daitche 3rd order"), markevery=markers_on)    
+plt.plot(taxis, Daitche_particle.pos_vec[:,0],
+              'x', markeredgewidth=lw, markersize=ms,
+              color='blue', label=("Daitche 3rd order"), markevery=markers_on)
+   
 plt.xlabel('$time$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower right", fontsize=fs-1, prop={'size':fs-1})
 plt.ylim([x_left, x_right])
 plt.grid()
 
 plt.savefig(save_plot_to + 'Figure_03b.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_03b.pdf', save_plot_to + 'Figure_03b.pdf'])
 
 plt.show()

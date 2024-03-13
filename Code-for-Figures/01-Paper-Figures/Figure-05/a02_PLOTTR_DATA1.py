@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from subprocess import call
 from progressbar import progressbar
 from a03_FIELD0_DATA1 import velocity_field_Faraday1
 from a09_PRTCLE_IMEX4 import maxey_riley_imex
@@ -18,7 +19,7 @@ Created on Tue Jan 30 17:19:11 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                  # Folder where output is saved
 vel          = velocity_field_Faraday1(field_boundary=False)    # Flow field
 tini         = 0.                           # Initial time
 tend         = 5.                           # Final time
@@ -54,7 +55,7 @@ t_scale      = 10.          # Time Scale of the flow
 ################# Define parameters for the numerical schemes #################
 ###############################################################################
 #
-# Define Uniform grid [0,1]:
+# Define Uniform grid [0,1):
 N           = np.copy(L)  # Number of nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
@@ -72,7 +73,8 @@ order_Daitche = 3
 ######################### Create classes instances ############################
 ###############################################################################
 #
-# Particles in the left plot
+# Particle classes in the left plot
+#  - Class of particle traecjtory calulated wtih Daitche's scheme
 Daitche_left  = maxey_riley_Daitche(1, y0, v0, vel, L, order_Daitche,
                                        particle_density    = rho1_p,
                                        fluid_density       = rho1_f,
@@ -80,6 +82,7 @@ Daitche_left  = maxey_riley_Daitche(1, y0, v0, vel, L, order_Daitche,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with IMEX4 scheme
 IMEX4_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      particle_density    = rho1_p,
                                      fluid_density       = rho1_f,
@@ -90,7 +93,8 @@ IMEX4_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      FDOrder             = 4,
                                      parallel_flag       = False)
 
-# Particles in the right plot
+# Particles classes in the right plot
+#  - Class of particle traecjtory calulated wtih Daitche's scheme
 Daitche_right  = maxey_riley_Daitche(1, y0, v0, vel, L, order_Daitche,
                                        particle_density    = rho2_p,
                                        fluid_density       = rho2_f,
@@ -98,6 +102,7 @@ Daitche_right  = maxey_riley_Daitche(1, y0, v0, vel, L, order_Daitche,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
+#  - Class of particle trajectory calculated with the Trapezoidal Rule
 Trapezoidal_particle = maxey_riley_trapezoidal(1, y0, v0, vel, x_fd_v,
                                                   c, dt, tini,
                                                   particle_density    = rho2_p,
@@ -134,10 +139,10 @@ elif order_Daitche == 3:
 ###############################################################################
 #
 # Bounds for Convergence velocity Field
-x_left  = 0.015  # 0.0
-x_right = 0.035  # 0.07039463189473738
+x_left  = 0.015
+x_right = 0.035
 y_down  = 0.0
-y_up    = 0.0125 # 0.0524872255355498
+y_up    = 0.0125
 
 
 #
@@ -156,14 +161,12 @@ X, Y  = np.meshgrid(xaxis, yaxis)
 
 #
 ###############################################################################
-##### Plot plots in figure with Particle's trajectories on velocity field #####
+##### Plot plots of figure with Particle's trajectories on velocity field #####
 ###############################################################################
 #
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 2.2
+fs   = 7
+lw   = 1.2
+ms   = 6
 
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
@@ -175,42 +178,48 @@ markers_on = np.arange(0, L, int(L/10))
 # Left plot #
 #############
 
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Daitche_left.pos_vec[:,0], Daitche_left.pos_vec[:,1],
               color='red', linewidth=lw, label="Daitche, 3rd order")
 plt.plot(IMEX4_particle.pos_vec[:,0], IMEX4_particle.pos_vec[:,1],
-              'x', markeredgewidth=lw, markersize=10,
-              color='green', label=("IMEX, 4th order"), markevery=markers_on)
+              'x', markeredgewidth=lw, markersize=ms,
+              color='green', label=("IMEX 4th order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="upper right", fontsize=fs-1, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_05a.pdf', format='pdf', dpi=400, bbox_inches='tight')
 
+call(["pdfcrop", save_plot_to + 'Figure_05a.pdf', save_plot_to + 'Figure_05a.pdf'])
 
 ##############
 # Right plot #
 ##############
 
-fig2 = plt.figure(2, layout='tight', figsize=(3.6, 1.8))
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
+plt.figure(2, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Daitche_right.pos_vec[:,0], Daitche_right.pos_vec[:,1],
-              color='red', linewidth=lw, label="Daitche, 3rd order")
+              color='red', linewidth=lw, label="Daitche 3rd order")
 plt.plot(Trapezoidal_particle.pos_vec[:,0], Trapezoidal_particle.pos_vec[:,1], 'x',
-              markeredgewidth=lw, markersize=10,
-              color='blue', label=("Trap. Rule"), markevery=markers_on)    
+              markeredgewidth=lw, markersize=ms,
+              color='blue', label=("Trap. Rule"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower right", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="upper right", fontsize=fs-1, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_05b.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_05b.pdf', save_plot_to + 'Figure_05b.pdf'])
 
 plt.show()

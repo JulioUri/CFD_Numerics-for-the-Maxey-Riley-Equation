@@ -22,7 +22,7 @@ Created on Thu Feb 01 10:48:56 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                # Folder where to save output
 tini         = 0.                         # Initial time
 tend         = 1.                         # Final time
 omega_value  = 1.                         # Angular velocity of the field 
@@ -312,6 +312,8 @@ with open(save_plot_to + 'Convergence_rates.txt', 'w') as file:
     file.write("Convergence rates\n")
     file.write( str(tabulate(mydata, headers=head, tablefmt="grid") ))
 
+''' # Uncomment if interested in getting the plots
+
 #
 ###############################################################################
 ##### Plot plots in figure with Particle's trajectories on velocity field #####
@@ -326,12 +328,12 @@ fig1.set_figheight(3.6)
 fs = 13
 lw = 1.5
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(190, 8e-7, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(155, 1e-9, "$N^{-4}$", color='grey')
+# plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
+# plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+# plt.text(190, 8e-7, "$N^{-3}$", color='grey')
+# plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+# plt.text(155, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[0], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[0],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -361,12 +363,12 @@ fig1.set_figheight(3.6)
 fs = 13
 lw = 1.5
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(190, 8e-7, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(155, 1e-9, "$N^{-4}$", color='grey')
+# plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1.3e-4, "$N^{-2}$", color='grey')
+# plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+# plt.text(190, 8e-7, "$N^{-3}$", color='grey')
+# plt.plot(L_v[2:4], 20 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+# plt.text(155, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[1], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[1],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -395,12 +397,12 @@ fig2 = plt.figure(3, layout='tight')
 fig2.set_figwidth(4.2)
 fig2.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
-plt.text(135, 1.e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 5e-2*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
-plt.text(150, 1e-9, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 8e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
-plt.text(160, 2e-11, "$N^{-4}$", color='grey')
+# plt.plot(L_v[2:4], 1.*L_v[2:4]**(-2.0), '--', color='grey',                              linewidth=1.0)
+# plt.text(135, 1.e-4, "$N^{-2}$", color='grey')
+# plt.plot(L_v[2:4], 5e-2*L_v[2:4]**(-3.0), '--', color='grey',                              linewidth=1.0)
+# plt.text(150, 1e-9, "$N^{-3}$", color='grey')
+# plt.plot(L_v[2:4], 8e-3 * L_v[2:4]**(-4.0), '--', color='grey',                              linewidth=1.0)
+# plt.text(160, 2e-11, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[2], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[2],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -429,12 +431,12 @@ fig3 = plt.figure(4, layout='tight')
 fig3.set_figwidth(4.2)
 fig3.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(175, 1e-6, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1e-9, "$N^{-4}$", color='grey')
+# plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
+# plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+# plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+# plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[3], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[3],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -463,12 +465,12 @@ fig3 = plt.figure(5, layout='tight')
 fig3.set_figwidth(4.2)
 fig3.set_figheight(3.6)
 
-plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
-plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
-plt.text(175, 1e-6, "$N^{-3}$", color='grey')
-plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
-plt.text(145, 1e-9, "$N^{-4}$", color='grey')
+# plt.plot(L_v[2:4], 1.5*L_v[2:4]**(-2.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1.5e-4, "$N^{-2}$", color='grey')
+# plt.plot(L_v[2:4], 5*L_v[2:4]**(-3.0), '--', color='grey', linewidth=1.0)
+# plt.text(175, 1e-6, "$N^{-3}$", color='grey')
+# plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
+# plt.text(145, 1e-9, "$N^{-4}$", color='grey')
 
 plt.plot(L_v, Prasath_err_dic[4], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
 plt.plot(L_v, Trap_err_dic[4],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
@@ -489,5 +491,7 @@ plt.grid()
 plt.savefig(save_plot_to + 'Figure_05.pdf', format='pdf', dpi=500)
 
 plt.show()
+
+'''
 
 print("\007")

@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from subprocess import call
 from progressbar import progressbar
 from a03_FIELD0_ANALY import velocity_field_Analytical
 from a09_PRTCLE_ANALY import maxey_riley_analytic
@@ -18,7 +19,7 @@ Created on Tue Jan 30 11:17:01 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                # Folder where output is saved
 tini         = 0.                         # Initial time
 tend         = 10.                        # Final time
 L            = 101                        # Time nodes
@@ -55,14 +56,14 @@ t_scale      = 10.          # Time Scale of the flow
 ################# Define parameters for the numerical schemes #################
 ###############################################################################
 #
-# Define Uniform grid [0,1]:
-N           = np.copy(L)  # Number of nodes
+# Define Uniform grid [0,1):
+N           = np.copy(L)    # Number of nodes in space; equal to time nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
 # Control constant (Koleva 2005)
 c           = 20
 
-# Logarithm map to obtain QUM
+# Logarithm map to obtain Quasi Uniform Mesh (QUM)
 x_fd_v      = -c * np.log(1.0 - xi_fd_v)
 
 
@@ -71,7 +72,8 @@ x_fd_v      = -c * np.log(1.0 - xi_fd_v)
 ######################### Create classes instances ############################
 ###############################################################################
 #
-# Particles in the left plot
+# Particle classes in the left plot
+#  - Class of the analytic solution in the Vortex
 Analytic_left  = maxey_riley_analytic(1, y0, v0, tini, vel,
                                       particle_density    = rho1_p,
                                       fluid_density       = rho1_f,
@@ -79,6 +81,7 @@ Analytic_left  = maxey_riley_analytic(1, y0, v0, tini, vel,
                                       kinematic_viscosity = nu_f,
                                       time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with DIRK solver
 DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                       particle_density    = rho1_p,
                                       fluid_density       = rho1_f,
@@ -87,7 +90,8 @@ DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                       time_scale          = t_scale,
                                       parallel_flag       = False)
 
-# Particles in the right plot
+# Particles classes in the right plot
+#  - Class of the analytic solution in the Vortex
 Analytic_right = maxey_riley_analytic(1, y0, v0, tini, vel,
                                       particle_density    = rho2_p,
                                       fluid_density       = rho2_f,
@@ -95,6 +99,7 @@ Analytic_right = maxey_riley_analytic(1, y0, v0, tini, vel,
                                       kinematic_viscosity = nu_f,
                                       time_scale          = t_scale)
 
+#  - Class of particle trajectory calculated with IMEX4 solver
 IMEX4_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                       particle_density    = rho2_p,
                                       fluid_density       = rho2_f,
@@ -125,10 +130,10 @@ for tt in progressbar(range(1, len(taxis))):
 ###############################################################################
 #
 # Bounds for Convergence velocity Field
-x_left  = -1.5
-x_right = 1.5
-y_down  = -1.5
-y_up    = 1.5
+x_left  = -1.7
+x_right = 1.7
+y_down  = -1.7
+y_up    = 1.7
 
 
 #
@@ -140,66 +145,73 @@ y_up    = 1.5
 nx = 20
 ny = 21
 
-xaxis = np.linspace(x_left, x_right, nx)
-yaxis = np.linspace(y_down, y_up, ny)
-X, Y = np.meshgrid(xaxis, yaxis)
+xaxis   = np.linspace(x_left, x_right, nx)
+yaxis   = np.linspace(y_down, y_up, ny)
+X, Y    = np.meshgrid(xaxis, yaxis)
 
 
 #
 ###############################################################################
-##### Plot plots in figure with Particle's trajectories on velocity field #####
+### Plot plots of the figure with Particle's trajectories on velocity field ###
 ###############################################################################
 #
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 2.2
+fs   = 7
+lw   = 1.2
+ms   = 6
+
+##############################################
+# Define points where to plot velocity field #
+##############################################
 
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
 
 markers_on = np.arange(0, L, int((L-1)/20))
 
-
 #############
 # Left plot #
 #############
 
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Analytic_left.pos_vec[:,0], Analytic_left.pos_vec[:,1],
               color='red', linewidth=lw, label="Analytical solution")
-plt.plot(DIRK_particle.pos_vec[:,0], DIRK_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=10,
+plt.plot(DIRK_particle.pos_vec[:,0], DIRK_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=ms,
               color='green', label=("DIRK, 4th order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_01a.pdf', format='pdf', dpi=400, bbox_inches='tight')
 
+call(["pdfcrop", save_plot_to + 'Figure_01a.pdf', save_plot_to + 'Figure_01a.pdf'])
 
 ##############
 # Right plot #
 ##############
 
-fig2 = plt.figure(2, layout='tight', figsize=(3.6, 1.8))
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
+fig2 = plt.figure(2, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Analytic_right.pos_vec[:,0], Analytic_right.pos_vec[:,1],
               color='red', linewidth=lw, label="Analytical solution")
-plt.plot(IMEX4_particle.pos_vec[:,0], IMEX4_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=10,
-              color='blue', label=("IMEX 4th order"), markevery=markers_on)    
+plt.plot(IMEX4_particle.pos_vec[:,0], IMEX4_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=ms,
+              color='blue', label=("IMEX 4th order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_01b.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_01b.pdf', save_plot_to + 'Figure_01b.pdf'])
 
 plt.show()

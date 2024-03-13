@@ -4,6 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from progressbar import progressbar
+from subprocess import call
 from a03_FIELD0_BICKL import velocity_field_Bickley
 from a09_PRTCLE_IMEX4 import maxey_riley_imex
 from a09_PRTCLE_DIRK4 import maxey_riley_dirk
@@ -18,11 +19,11 @@ Created on Tue Jan 30 17:19:11 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                  # Folder where output is saved
 vel          = velocity_field_Bickley()     # Flow field
 tini         = 0                            # Initial time
 tend         = 1.                           # Final time
-L            = 101  #2001                          # Time nodes
+L            = 101  #2001                   # Time nodes
 taxis        = np.linspace(tini, tend, L)   # Time axis
 dt           = taxis[1] - taxis[0]          # time step
 y0           = np.array([0., 0.])           # Initial position
@@ -54,7 +55,7 @@ t_scale      = 10.          # Time Scale of the flow
 ################# Define parameters for the numerical schemes #################
 ###############################################################################
 #
-# Define Uniform grid [0,1]:
+# Define Uniform grid [0,1):
 N           = np.copy(L)  # Number of nodes
 xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
@@ -72,7 +73,8 @@ nodes_dt    = 21 # Advised by Prasath et al.
 ######################### Create classes instances ############################
 ###############################################################################
 #
-# Particles in the left plot
+# Particle classes in the left plot
+#  - Class of particle trajectory calulated with Prasath et al.'s scheme
 Prasath_left  = maxey_riley_Prasath(1, y0, v0, vel,
                                        N, tini, dt, nodes_dt,
                                        particle_density    = rho1_p,
@@ -81,6 +83,7 @@ Prasath_left  = maxey_riley_Prasath(1, y0, v0, vel,
                                        kinematic_viscosity = nu_f,
                                        time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with DIRK4 scheme
 DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      particle_density    = rho1_p,
                                      fluid_density       = rho1_f,
@@ -88,7 +91,8 @@ DIRK_particle  = maxey_riley_dirk(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      kinematic_viscosity = nu_f,
                                      time_scale          = t_scale)
 
-# Particles in the right plot
+# Particle classes in the right plot
+#  - Class of particle trajectory calulated with Prasath et al.'s scheme
 Prasath_right  = maxey_riley_Prasath(1, y0, v0, vel,
                                         N, tini, dt, nodes_dt,
                                         particle_density    = rho2_p,
@@ -97,6 +101,7 @@ Prasath_right  = maxey_riley_Prasath(1, y0, v0, vel,
                                         kinematic_viscosity = nu_f,
                                         time_scale          = t_scale)
 
+#  - Class of particle trajectory calulated with IMEX2 scheme
 IMEX2_particle = maxey_riley_imex(1, y0, v0, vel, x_fd_v, c, dt, tini,
                                      particle_density    = rho2_p,
                                      fluid_density       = rho2_f,
@@ -156,11 +161,9 @@ X, Y  = np.meshgrid(xaxis, yaxis)
 ##### Plot plots in figure with Particle's trajectories on velocity field #####
 ###############################################################################
 #
-fig1 = plt.figure(1, layout='tight')
-fig1.set_figwidth(4.2)
-fig1.set_figheight(3.6)
-fs = 13
-lw = 2.2
+fs   = 7
+lw   = 1.2
+ms   = 6
 
 u, v = vel.get_velocity(X, Y, taxis[-1])
 ux, uy, vx, vy = vel.get_gradient(X, Y, taxis[-1])
@@ -172,41 +175,49 @@ markers_on = np.arange(0, L, int((L-1)/5))
 # Left plot #
 #############
 
+plt.figure(1, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Prasath_left_pos[:,0], Prasath_left_pos[:,1],
               color='red', linewidth=lw, label="Prasath et al.")
 plt.plot(DIRK_particle.pos_vec[:,0], DIRK_particle.pos_vec[:,1],
-              'x', markeredgewidth=lw, markersize=10,
+              'x', markeredgewidth=lw, markersize=ms,
               color='green', label=("DIRK, 4th order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs-1, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_04a.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_04a.pdf', save_plot_to + 'Figure_04a.pdf'])
 
 
 ##############
 # Right plot #
 ##############
 
-fig2 = plt.figure(2, layout='tight', figsize=(3.6, 1.8))
-fig2.set_figwidth(4.2)
-fig2.set_figheight(3.6)
+plt.figure(2, layout='tight', figsize=(2.5, 2.15))
+
 plt.quiver(X, Y, u, v)
 plt.plot(Prasath_right_pos[:,0], Prasath_right_pos[:,1],
               color='red', linewidth=lw, label="Prasath et al.")
-plt.plot(IMEX2_particle.pos_vec[:,0], IMEX2_particle.pos_vec[:,1], 'x', markeredgewidth=lw, markersize=10,
-              color='blue', label=("IMEX 2nd order"), markevery=markers_on)    
+plt.plot(IMEX2_particle.pos_vec[:,0], IMEX2_particle.pos_vec[:,1],
+              'x', markeredgewidth=lw, markersize=ms,
+              color='blue', label=("IMEX 2nd order"), markevery=markers_on)
+
 plt.xlabel('$y^{(1)}$', fontsize=fs, labelpad=0.25)
 plt.ylabel('$y^{(2)}$', fontsize=fs, labelpad=0.25)
 plt.tick_params(axis='both', labelsize=fs)
-plt.legend(loc="lower left", fontsize=fs, prop={'size':fs-4})
+plt.legend(loc="lower left", fontsize=fs-1, prop={'size':fs-1})
 plt.xlim([x_left, x_right])
 plt.ylim([y_down, y_up])
 
 plt.savefig(save_plot_to + 'Figure_04b.pdf', format='pdf', dpi=400, bbox_inches='tight')
+
+call(["pdfcrop", save_plot_to + 'Figure_04b.pdf', save_plot_to + 'Figure_04b.pdf'])
 
 plt.show()
