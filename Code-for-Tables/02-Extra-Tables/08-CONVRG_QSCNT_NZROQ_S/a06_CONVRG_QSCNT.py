@@ -22,7 +22,7 @@ Created on Thu Feb 01 10:48:56 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to = './VISUAL_OUTPUT/'
+save_plot_to = './OUTPUT/'                # Folder where to save output
 tini         = 0.                         # Initial time
 tend         = 1.                         # Final time
 vel          = velocity_field_Quiescent() # Flow field
@@ -252,37 +252,23 @@ for j in range(0, len(t_scale)):
 ################################## Save data ##################################
 ###############################################################################
 #
-Err_dic = dict()
-Err_dic["Parameters"]  = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
-                          ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
-                          ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
-                          str(rad_p**2./(3.*nu_f*t_scale))}
-Err_dic["L_v"]         = L_v
 for j in range(0, len(t_scale)):
-    Err_dic["Prasath"] = Prasath_err_dic[j]
-    Err_dic["Trap"]    = Trap_err_dic[j]
-    Err_dic["IMEX2"]   = IMEX2_err_dic[j]
-    Err_dic["Daitche"] = Daitche_err_dic[j]
-    Err_dic["IMEX4"]   = IMEX4_err_dic[j]
-    Err_dic["DIRK4"]   = DIRK4_err_dic[j]
-    if j == 0:
-        with open(save_plot_to + 'Data_01.txt', 'w') as file:
-            file.write( str(Err_dic) )
-    elif j == 1:
-        with open(save_plot_to + 'Data_02.txt', 'w') as file:
-            file.write( str(Err_dic) )
-    elif j== 2:
-        with open(save_plot_to + 'Data_03.txt', 'w') as file:
-            file.write( str(Err_dic) )
-    elif j== 3:
-        with open(save_plot_to + 'Data_04.txt', 'w') as file:
-            file.write( str(Err_dic) )
-    elif j== 4:
-        with open(save_plot_to + 'Data_05.txt', 'w') as file:
-            file.write( str(Err_dic) )
-    elif j== 5:
-        with open(save_plot_to + 'Data_06.txt', 'w') as file:
-            file.write( str(Err_dic) )
+    with open(save_plot_to + 'Data_0'  + str(j+1) +'.txt', 'w') as file:
+        file.write( "Parameters:\n" )
+        file.write( " - t_0: " + str(tini) + "\n" )
+        file.write( " - t_f: " + str(tend) + "\n" )
+        file.write( " - y_0: " + str(y0) + "\n" )
+        file.write( " - v_0: " + str(v0) + "\n" )
+        file.write( " - R: " + str((1.+ 2.*rho_p/rho_f) /3.) + "\n" )
+        file.write( " - S: " + str(rad_p**2./(3.*nu_f*t_scale[j])) + "\n\n" )
+        file.write( "Nodes: " + str(L_v) + "\n\n" )
+        file.write( "Errors:\n")
+        file.write( " - Prasath: " + str(Prasath_err_dic[j]) + "\n" )
+        file.write( " - Trap. Rule: " + str(Trap_err_dic[j]) + "\n" )
+        file.write( " - IMEX2: " + str(IMEX2_err_dic[j]) + "\n" )
+        file.write( " - Daitche: " + str(Daitche_err_dic[j]) + "\n" )
+        file.write( " - IMEX4: " + str(IMEX4_err_dic[j]) + "\n" )
+        file.write( " - DIKR4: " + str(DIRK4_err_dic[j]) + "\n" )
 
 
 #
@@ -322,6 +308,10 @@ head = ["S:", str(round(rad_p**2./(3.*nu_f*t_scale[0]), 2)),
 
 print("\nConvergence rates")
 print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
+
+with open(save_plot_to + 'Convergence_rates.txt', 'w') as file:
+    file.write("Convergence rates\n")
+    file.write( str(tabulate(mydata, headers=head, tablefmt="grid") ))
 
 #
 ###############################################################################
@@ -515,12 +505,12 @@ plt.text(175, 1e-6, "$N^{-3}$", color='grey')
 plt.plot(L_v[2:4], 15 * L_v[2:4]**(-4.0), '--', color='grey', linewidth=1.0)
 plt.text(145, 1e-9, "$N^{-4}$", color='grey')
 
-plt.plot(L_v[:-1], Prasath_err_dic[5], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
-plt.plot(L_v[:-1], Trap_err_dic[5],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
-plt.plot(L_v[:-1], IMEX2_err_dic[5],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
-plt.plot(L_v[:-1], Daitche_err_dic[5], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
-plt.plot(L_v[:-1], IMEX4_err_dic[5],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
-plt.plot(L_v[:-1], DIRK4_err_dic[5],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
+plt.plot(L_v, Prasath_err_dic[5], 'P-', color='orange', label="Prasath et al. (2019)", linewidth=lw)
+plt.plot(L_v, Trap_err_dic[5],    'v-', color='green',  label="FD2 + Trap. Rule",      linewidth=lw)
+plt.plot(L_v, IMEX2_err_dic[5],   's-', color='violet', label="FD2 + IMEX2",           linewidth=lw)
+plt.plot(L_v, Daitche_err_dic[5], 'd-', color='cyan',   label="Daitche, " + str(order_Daitche) + " order", linewidth=lw)
+plt.plot(L_v, IMEX4_err_dic[5],   'o-', color='red',    label="FD4 + IMEX4",           linewidth=lw)
+plt.plot(L_v, DIRK4_err_dic[5],   '+-', color='blue',   label="FD4 + DIRK4",           linewidth=lw)
 
 plt.tick_params(axis='both', labelsize=fs)
 plt.xscale("log")
