@@ -279,12 +279,12 @@ for j in range(0, len(t_scale)):
         file.write( " - S: " + str(rad_p**2./(3.*nu_f*t_scale[j])) + "\n\n" )
         file.write( "Nodes: " + str(L_v) + "\n\n" )
         file.write( "Errors:\n")
-        file.write( " - Prasath: " + str(Prasath_err_dic[j]) + "\n" )
-        file.write( " - Trap. Rule: " + str(Trap_err_dic[j]) + "\n" )
-        file.write( " - IMEX2: " + str(IMEX2_err_dic[j]) + "\n" )
-        file.write( " - Daitche: " + str(Daitche_err_dic[j]) + "\n" )
-        file.write( " - IMEX4: " + str(IMEX4_err_dic[j]) + "\n" )
-        file.write( " - DIKR4: " + str(DIRK4_err_dic[j]) + "\n" )
+        file.write( " - Prasath_err_v = " + str(Prasath_err_dic[j]) + "\n" )
+        file.write( " - Trap_err_v = " + str(Trap_err_dic[j]) + "\n" )
+        file.write( " - IMEX2_err_v = " + str(IMEX2_err_dic[j]) + "\n" )
+        file.write( " - Daitche_err_v = " + str(Daitche_err_dic[j]) + "\n" )
+        file.write( " - IMEX4_err_v = " + str(IMEX4_err_dic[j]) + "\n" )
+        file.write( " - DIRK4_err_v = " + str(DIRK4_err_dic[j]) + "\n" )
 
 
 #

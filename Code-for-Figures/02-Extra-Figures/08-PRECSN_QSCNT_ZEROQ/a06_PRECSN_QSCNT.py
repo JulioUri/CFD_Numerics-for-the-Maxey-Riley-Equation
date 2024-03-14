@@ -23,7 +23,7 @@ Created on Tue Feb 06 16:14:22 2024
 ################# Define field and implementation variables ###################
 ###############################################################################
 #
-save_plot_to   = './VISUAL_OUTPUT/'
+save_plot_to   = './OUTPUT/'
 tini           = 0.                           # Initial time
 tend           = 1.                           # Final time
 vel            = velocity_field_Quiescent()   # Flow field
@@ -114,10 +114,10 @@ for ll in range(0, len(L_v)):
     
     #
     #######################################################################
-    ############# Define parameters for the numerical schemes #############
+    ########### Create particle classes of the numerical schemes ##########
     #######################################################################
     #
-    # Define Uniform grid [0,1]:
+    # Define Uniform grid [0,1):
     N           = np.copy(L_v[ll])  # Number of nodes
     xi_fd_v     = np.linspace(0., 1., int(N))[:-1]
 
@@ -178,6 +178,12 @@ for ll in range(0, len(L_v)):
                                             particle_radius     = rad_p,
                                             kinematic_viscosity = nu_f,
                                             time_scale          = t_scale)
+    
+    #
+    #######################################################################
+    #################### Calculate numerical solutions ####################
+    #######################################################################
+    #
     
     print("- Calculating Analytic solution.")
     for tt in range(1, len(taxis)):
@@ -290,27 +296,29 @@ PrecPrasath = str(round(np.polyfit(np.log(Prasath_time_v), np.log(Prasath_err_v)
 ################################## Save data ##################################
 ###############################################################################
 #
-Err_dic = dict()
-Err_dic["L_v"] = str(L_v)
-Err_dic["Parameters"]   = {"t_0: " + str(tini) + ", t_f: " + str(tend) + \
-                           ", y_0: " + str(y0) + ", v_0: " + str(v0) + \
-                           ", R: " + str((1.+ 2.*rho_p/rho_f) /3.) + ", S: " + \
-                           str(rad_p**2./(3.*nu_f*t_scale))}
-Err_dic["Prasath Err"]  = str(Prasath_err_v)
-Err_dic["Prasath Time"] = str(Prasath_time_v)
-Err_dic["Trap Err"]     = str(Trap_err_v)
-Err_dic["Trap Time"]    = str(Trap_time_v)
-Err_dic["IMEX2 Err"]    = str(IMEX2_err_v)
-Err_dic["IMEX2 Time"]   = str(IMEX2_time_v)
-Err_dic["Daitche Err"]  = str(Daitche_err_v)
-Err_dic["Daitche Time"] = str(Daitche_time_v)
-Err_dic["IMEX4 Err"]    = str(IMEX4_err_v)
-Err_dic["IMEX4 Time"]   = str(IMEX4_time_v)
-Err_dic["DIRK4 Err"]    = str(DIRK4_err_v)
-Err_dic["DIRK4 Time"]   = str(DIRK4_time_v)
-
-with open(save_plot_to + 'Data.txt', 'w') as file:
-    file.write( str(Err_dic) )
+with open(save_plot_to + 'Data_0'  + str(j+1) +'.txt', 'w') as file:
+    file.write( "Parameters:\n" )
+    file.write( " - t_0: " + str(tini) + "\n" )
+    file.write( " - t_f: " + str(tend) + "\n" )
+    file.write( " - y_0: " + str(y0) + "\n" )
+    file.write( " - v_0: " + str(v0) + "\n" )
+    file.write( " - R: "   + str((1.+ 2.*rho_p/rho_f) /3.) + "\n" )
+    file.write( " - S: "   + str(rad_p**2./(3.*nu_f*t_scale)) + "\n\n" )
+    file.write( "Nodes: "  + str(L_v) + "\n\n" )
+    file.write( "Errors:\n")
+    file.write( " - Prasath_err_v = "  + str(Prasath_err_v) + "\n" )
+    file.write( " - Trap_err_v = "     + str(Trap_err_v) + "\n" )
+    file.write( " - IMEX2_err_v = "    + str(IMEX2_err_v) + "\n" )
+    file.write( " - Daitche_err_v = "  + str(Daitche_err_v) + "\n" )
+    file.write( " - IMEX4_err_v = "    + str(IMEX4_err_v) + "\n" )
+    file.write( " - DIRK4_err_v = "    + str(DIRK4_err_v) + "\n\n" )
+    file.write( "Runtimes:\n")
+    file.write( " - Prasath_time_v = " + str(Prasath_time_v) + "\n" )
+    file.write( " - Trap_time_v = "    + str(Trap_time_v) + "\n" )
+    file.write( " - IMEX2_time_v = "   + str(IMEX2_time_v) + "\n" )
+    file.write( " - Daitche_time_v = " + str(Daitche_time_v) + "\n" )
+    file.write( " - IMEX4_time_v = "   + str(IMEX4_time_v) + "\n" )
+    file.write( " - DIRK4_time_v = "   + str(DIRK4_time_v) + "\n" )
 
 #
 ###############################################################################
@@ -330,6 +338,10 @@ head = ["R:", str( round(1.+2.*(rho_p/rho_f)/3., 2) )]
 
 print("\nSlopes in the Work-precision plots.")
 print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
+
+with open(save_plot_to + 'Precision_rates.txt', 'w') as file:
+    file.write("Slopes in the Work-precision plots\n")
+    file.write( str(tabulate(mydata, headers=head, tablefmt="grid") ))
 
 #
 ###############################################################################
