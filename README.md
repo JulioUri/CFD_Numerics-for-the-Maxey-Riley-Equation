@@ -31,6 +31,8 @@ The toolbox currently depends on classical Python packages such as [Numpy](https
 
 Additional libraries like [progressbar2](https://pypi.org/project/progressbar2/) may also require installation.
 
+> :mega: Note that the file `00_2mm_Faraday_50Hz_40ms_1_6g.mat` that contains the data with the experimental field is not provided, since we do not hold ownership on it. Please contact [Prof. Dr. Alexandra VON KAMEKE](https://www.haw-hamburg.de/hochschule/beschaeftigte/detail/person/person/show/alexandra-von-kameke/) if interested in using it.
+
 ## Script naming convenction
 
 Each .py file is made up of a code with the following structure *z99_AAAAAA_BBBBB.py*. Prefix *z99* is linked to the code *AAAAAA*, but enables an appropiate sorting within the folder different from Alphabetical sorting. Code *AAAAAA* summarizes what the code does:
