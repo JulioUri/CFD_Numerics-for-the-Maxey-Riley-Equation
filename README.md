@@ -10,7 +10,7 @@ For questions, contact [M. Sc. Julio Urizarna](https://www.linkedin.com/in/julio
 
 ## How to run the code
 
-> :mega: Note that the file `00_2mm_Faraday_50Hz_40ms_1_6g.mat` that contains the data with the experimental field is not provided, since we do not hold ownership on it. This may rise an error when trying to reproduce the figures and tables. Please contact [Prof. Dr. Alexandra VON KAMEKE](https://www.haw-hamburg.de/hochschule/beschaeftigte/detail/person/person/show/alexandra-von-kameke/) if interested in using it.
+> :mega: Note that the file `00_2mm_Faraday_50Hz_40ms_1_6g.mat` that contains the data with the experimental field is not provided, since we do not hold ownership on it. This may rise an error when trying to reproduce some figures and tables. Please contact [Prof. Dr. Alexandra VON KAMEKE](https://www.haw-hamburg.de/hochschule/beschaeftigte/detail/person/person/show/alexandra-von-kameke/) if interested in using it.
 
 Within each Figure or Table folder, e.g. Figure-01 or Table-4-upper, there is a file with the prefixes "a02" (a02_PLOTTR_) or "a06" (either a06_CONVRG_ or a06_PRECSN_). These are the scripts that must be run in order to obtain the figures/tables:
 
