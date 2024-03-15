@@ -252,7 +252,7 @@ for j in range(0, len(rho_p)):
         
         tf              = time.time()
         
-        print("\n   Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.")
+        print("\n   Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.\n")
         
     Trap_err_dic[j]    = Trap_err_v
     Daitche_err_dic[j] = Daitche_err_v

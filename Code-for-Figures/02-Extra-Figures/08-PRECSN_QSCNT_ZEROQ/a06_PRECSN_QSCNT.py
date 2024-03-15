@@ -296,7 +296,7 @@ PrecPrasath = str(round(np.polyfit(np.log(Prasath_time_v), np.log(Prasath_err_v)
 ################################## Save data ##################################
 ###############################################################################
 #
-with open(save_plot_to + 'Data_0'  + str(j+1) +'.txt', 'w') as file:
+with open(save_plot_to + 'Data.txt', 'w') as file:
     file.write( "Parameters:\n" )
     file.write( " - t_0: " + str(tini) + "\n" )
     file.write( " - t_f: " + str(tend) + "\n" )
