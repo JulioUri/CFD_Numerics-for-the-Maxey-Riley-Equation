@@ -98,8 +98,8 @@ for j in range(0, len(rho_p)):
     ######################## Calculate reference solution #####################
     ###########################################################################
     #
-    print("-> Starting calculating values of the plot Nº" + str(j+1))
-    print("    *Calculating reference solution with Prasath et al.")
+    print("-> Starting calculating values of the plot Nº" + str(j+1) + "\n")
+    print("    *Calculating reference solution with Prasath et al.\n")
     N            = np.copy(L_v[-1])  # Number of nodes
     taxis        = np.linspace(tini, tend, L_v[-1]) # Time axis
     dt           = taxis[1] - taxis[0]        # time step
@@ -117,7 +117,7 @@ for j in range(0, len(rho_p)):
         Reference_pos = np.vstack((Reference_pos,
                                    Reference_particle.pos_vec[tt * (nodes_dt-1)]))
     
-    print("    *Starting the calculation of the numerical solutions.")
+    print("    *Starting the calculation of the numerical solutions.\n")
     for ll in range(0, len(L_v[:-1])):
         taxis     = np.linspace(tini, tend, L_v[ll]) # Time axis
         dt        = taxis[1] - taxis[0]        # time step
@@ -248,7 +248,7 @@ for j in range(0, len(rho_p)):
         
         tf              = time.time()
         
-        print("\n   Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.\n")
+        print("   Round number " + str(count) + " finished in " + str(round(tf - t0, 2)) + " seconds.\n")
         
     Trap_err_dic[j]    = Trap_err_v
     Daitche_err_dic[j] = Daitche_err_v
