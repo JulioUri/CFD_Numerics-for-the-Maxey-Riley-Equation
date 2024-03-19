@@ -1,5 +1,7 @@
 # Code repository for the paper _Efficient numerical methods for the Maxey-Riley equations with Basset History Term_
 
+[![DOI](https://zenodo.org/badge/750261240.svg)](https://zenodo.org/doi/10.5281/zenodo.10839776)
+
 This repository contains the Python scripts implemented for the development of the paper _Efficient numerical methods for the Maxey-Riley equations with Basset History Term_.
 
 Here one can therefore find the scripts that generate the figures and tables in the following publication:
