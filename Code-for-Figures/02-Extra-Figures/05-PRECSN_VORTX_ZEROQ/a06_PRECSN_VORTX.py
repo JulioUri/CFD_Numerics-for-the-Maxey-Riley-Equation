@@ -26,7 +26,7 @@ Created on Tue Feb 06 10:52:51 2024
 save_plot_to = './OUTPUT/'
 tini         = 0.                           # Initial time
 tend         = 1.                           # Final time
-omega_value  = 1.                           # Angular velocity of the field 
+omega_value  = 1.                           # Angular velocity of the field
 vel          = velocity_field_Analytical(omega=omega_value) # Flow field
 y0           = np.array([1., 0.])           # Initial position
 v0           = vel.get_velocity(y0[0], y0[1], tini) # Initial velocity
