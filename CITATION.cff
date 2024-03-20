@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Urizarna-Carasa"
+  given-names: "Julio"
+  orcid: "https://orcid.org/0000-0002-8856-5211"
+- family-names: "Schlegel"
+  given-names: "Leon"
+- family-names: "Ruprecht"
+  given-names: "Daniel"
+  orcid: "https://orcid.org/0000-0003-1904-2473"
+title: "A ToolBox to numerically solve the Maxey-Riley Equation"
+version: 1.0
+doi: 10.5281/zenodo.10839777
+date-released: 2024-03-19
+url: "https://github.com/JulioUri/CFD_Numerics-for-the-Maxey-Riley-Equation"
