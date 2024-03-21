@@ -312,8 +312,8 @@ mydata = [
 head = ["R:", str(round((1.+2.*(rho_p[0]/rho_f[0]))/3., 2)),
               str(round((1.+2.*(rho_p[1]/rho_f[1]))/3., 2)),
               str(round((1.+2.*(rho_p[2]/rho_f[2]))/3., 2)),
-              str(round((1.+2.*(rho_p[1]/rho_f[3]))/3., 2)),
-              str(round((1.+2.*(rho_p[1]/rho_f[4]))/3., 2))]
+              str(round((1.+2.*(rho_p[3]/rho_f[3]))/3., 2)),
+              str(round((1.+2.*(rho_p[4]/rho_f[4]))/3., 2))]
 
 print("\nConvergence rates")
 print("\n" + tabulate(mydata, headers=head, tablefmt="grid"))
