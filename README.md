@@ -36,6 +36,8 @@ The toolbox currently depends on classical Python packages such as [Numpy](https
 
 Additional libraries like [progressbar2](https://pypi.org/project/progressbar2/) may also require installation.
 
+The Anaconda environment I used during the developing process can be found in the file *base_environment.yml*. 
+
 ## Script naming convenction
 
 Each .py file is made up of a code with the following structure *z99_AAAAAA_BBBBB.py*. Prefix *z99* is linked to the code *AAAAAA*, but enables an appropiate sorting within the folder different from Alphabetical sorting. Code *AAAAAA* summarizes what the code does:
