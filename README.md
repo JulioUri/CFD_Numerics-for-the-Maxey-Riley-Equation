@@ -14,11 +14,12 @@ For questions, contact [M. Sc. Julio Urizarna](https://www.linkedin.com/in/julio
 
 > :mega: Note that the file `00_2mm_Faraday_50Hz_40ms_1_6g.mat` that contains the data with the experimental field is not provided, since we do not hold ownership on it. This may rise an error when trying to reproduce some figures and tables. Please contact [Prof. Dr. Alexandra VON KAMEKE](https://www.haw-hamburg.de/hochschule/beschaeftigte/detail/person/person/show/alexandra-von-kameke/) if interested in using it.
 
-Within each Figure or Table folder, e.g. Figure-01 or Table-4-upper, there is a file with the prefixes "a02" (a02_PLOTTR_) or "a06" (either a06_CONVRG_ or a06_PRECSN_). These are the scripts that must be run in order to obtain the figures/tables:
+Within each Figure or Table folder, e.g. Figure-01 or Table-4-upper, there is a file with the either prefixes "a02" (a02_PLOTTR_) or "a06" (either a06_CONVRG_ or a06_PRECSN_ or a06_ERRORS_). These are the scripts that must be run in order to obtain the figures/tables:
 
 - a02_PLOTTR_ files produce trajectory data,
-- a06_CONVRG_ files produce Convergence plots or tables and
-- a06_PRECSN_ files generate Work-Precision plots.
+- a06_CONVRG_ files produce Convergence plots or tables,
+- a06_PRECSN_ files generate Work-Precision plots and
+- a06_ERRORS_ file is only used once to obtain the error for different values of c for a particle in the Vortex. 
 
 Within the files above, some parameters can be modified, such as time steps, initial and final times, densities, particle radius, etc.
 
@@ -65,6 +66,12 @@ Each .py file is made up of a code with the following structure *z99_AAAAAA_BBBB
 
 - [Code-for-Figures](./Code-for-Figures/) : Scripts to generate the figures from the papers as well as some additional ones that were excluded from it.
 - [Code-for-Tables](./Code-for-Tables/) : Scripts to generate the Tables from the papers as well as some additional ones that were excluded from it.
+
+## Aditional considerations
+
+It is important to note that the version of the MRE used here corresponds to its nondimensional form and therefore all velocities, distances and times taken as an input are considered to be nondimensional.
+
+In the case of realistic experiments in which units play a key role, the user of the toolbox will require to make sure that the velocity input from the field as well as the lengths and times are nondimensional. This matter is worked in a paper that will soon be published between Daniel Ruprecht, Alexandra von Kameke, Kathrin Padberg-gehle and me. 
 
 ## Acknowledgements
 
