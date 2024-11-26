@@ -36,7 +36,7 @@ The toolbox currently depends on classical Python packages such as [Numpy](https
 
 Additional libraries like [progressbar2](https://pypi.org/project/progressbar2/) may also require installation.
 
-The Anaconda environment I used during the developing process can be found in the file *base_environment.yml*. 
+The Anaconda environment used during the developing process can be found in the file *base_environment.yml*. 
 
 ## Script naming convenction
 
