@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: If you use this software, please cite both the article from preferred-citation and the software itself.
+authors:
+  - family-names: Urizarna-Carasa
+    given-names: Julio
+title: CFD_Numerics-for-the-Maxey-Riley-Equation
+version: 1.1.0
+url: https://doi.org/10.5281/zenodo.14226715
+doi: 10.5281/zenodo.14226715
+date-released: '2024-11-26'
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Urizarna-Carasa
+      given-names: Julio
+    - family-names: Schlegel
+      given-names: Leon
+    - family-names: Ruprecht
+      given-names: Daniel
+      orcid: 0000-0003-1904-2473
+  title: Efficient numerical methods for the Maxey-Riley-Gatignol equations with Basset history term
+  url: https://doi.org/10.1016/j.cpc.2025.109502
+  doi: 10.1016/j.cpc.2025.109502
+  journal: "Computer Physics Communications"
+  volume: 310
+  pages: 109502
+  year: '2025'
+  conference: {}
+  publisher: {}
