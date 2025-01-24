@@ -2,11 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/750261240.svg)](https://zenodo.org/doi/10.5281/zenodo.10839776)
 
-This repository contains the Python scripts implemented for the development of the paper _Efficient numerical methods for the Maxey-Riley equations with Basset History Term_.
-
-Here one can therefore find the scripts that generate the figures and tables in the following publication:
-
-> _Urizarna-Carasa, J., Schlegel, L., Ruprecht, D. (2023), Efficient numerical methods for the Maxey-Riley equations with Basset history term. To appear in International Journal of Computational Fluid Dynamics._
+This repository contains the Python scripts implemented for the development of the paper [_Efficient numerical methods for the Maxey-Riley-Gatignol equations with Basset history term_](https://doi.org/10.1016/j.cpc.2025.109502). This code can reproduce all figures shown in the paper. You can freely use this code in accordance with its [license](https://github.com/JulioUri/CFD_Numerics-for-the-Maxey-Riley-Equation/blob/cd2c696efc8214b9f45ac5c6e21c92866149d25e/LICENSE). However, if you use this code or parts of it for a publication, please make sure to cite both this repository and the paper.
 
 For questions, contact [M. Sc. Julio Urizarna](https://www.linkedin.com/in/julio-urizarna/) or [Prof. Dr. Daniel RUPRECHT](https://www.mat.tuhh.de/home/druprecht/?homepage_id=druprecht).
 
