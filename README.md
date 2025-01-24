@@ -1,4 +1,4 @@
-# Code repository for the paper _Efficient numerical methods for the Maxey-Riley equations with Basset History Term_
+# Code repository for the paper _Efficient numerical methods for the Maxey-Riley-Gatignol equations with Basset history term_
 
 [![DOI](https://zenodo.org/badge/750261240.svg)](https://zenodo.org/doi/10.5281/zenodo.10839776)
 
